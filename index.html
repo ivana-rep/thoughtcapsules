@@ -1,19 +1,103 @@
-<TITLE>thought capsules</TITLE>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-        a:visited {
-            color: blue; /* I link visitati resteranno blu */
-        }
-    </style>
+<!doctype html>
+<html lang="en" data-theme="">
+  <head>
+    <meta charset="utf-8">
+    <title>thought capsules</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #111111;
+        --link: #005bff; /* light-ish blue in light mode */
+        --accent: #cccccc;
+      }
+      [data-theme="dark"] {
+        --bg: #000000;
+        --fg: #ffffff;
+        --link: #8fc9ed; /* light blue you asked for */
+        --accent: #333333;
+      }
 
-<PRE># thought capsules | ivana
-↳ <A HREF=about.txt>about</A><br>
-2025<br>
-↳ 2025-08-27 <a href="2025/20250827.txt" target="_blank">Perfectionism</a> 
-↳ 2025-08-26 <a href="2025/20250826.txt" target="_blank">Down</a> 
-↳ 2025-08-25 <a href="2025/20250825.txt" target="_blank">Days-off</a> 
-↳ 2025-08-24 <a href="2025/20250824.txt" target="_blank">Journaling</a> 
-↳ 2025-08-23 <a href="2025/20250823.txt" target="_blank">Dopamine</a> 
-↳ 2025-08-22 <a href="2025/20250822.txt" target="_blank">Nexus and Explosive Modernity (Readings)</a> 
-↳ 2025-08-21 <a href="2025/20250821.txt" target="_blank">Empty Mirrors</a> 
-</PRE>
+      html, body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        line-height: 1.35;
+        -webkit-font-smoothing: antialiased;
+        padding: 16px;
+      }
+
+      a, a:visited {
+        color: var(--link);
+        text-decoration: none;
+      }
+      a:hover { text-decoration: underline; }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0 16px;
+        border-bottom: 1px solid var(--accent);
+        margin-bottom: 16px;
+      }
+      .toggle {
+        font: inherit;
+        background: transparent;
+        color: var(--fg);
+        border: 1px solid var(--accent);
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div># thought capsules | ivana</div>
+      <button class="toggle" id="themeToggle" aria-label="Toggle dark mode">toggle theme</button>
+    </div>
+
+    <pre>
+↳ <a href="post.html?p=about.txt">about</a>
+2025
+↳ 2025-08-27 <a href="post.html?p=2025/20250827.txt" target="_blank" rel="noopener">Perfectionism</a>
+↳ 2025-08-26 <a href="post.html?p=2025/20250826.txt" target="_blank" rel="noopener">Down</a>
+↳ 2025-08-25 <a href="post.html?p=2025/20250825.txt" target="_blank" rel="noopener">Days-off</a>
+↳ 2025-08-24 <a href="post.html?p=2025/20250824.txt" target="_blank" rel="noopener">Journaling</a>
+↳ 2025-08-23 <a href="post.html?p=2025/20250823.txt" target="_blank" rel="noopener">Dopamine</a>
+↳ 2025-08-22 <a href="post.html?p=2025/20250822.txt" target="_blank" rel="noopener">Nexus and Explosive Modernity (Readings)</a>
+↳ 2025-08-21 <a href="post.html?p=2025/20250821.txt" target="_blank" rel="noopener">Empty Mirrors</a>
+    </pre>
+
+    <script>
+      (function () {
+        const KEY = "tc-theme";
+        const root = document.documentElement;
+        const saved = localStorage.getItem(KEY);
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const initial = saved || (prefersDark ? "dark" : "light");
+        root.setAttribute("data-theme", initial);
+
+        const btn = document.getElementById("themeToggle");
+        function toggle() {
+          const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          root.setAttribute("data-theme", next);
+          localStorage.setItem(KEY, next);
+        }
+        btn.addEventListener("click", toggle);
+      }());
+    </script>
+  </body>
+</html>
