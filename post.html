@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>post</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <style>
       :root {
         --bg: #ffffff;
@@ -11,12 +12,23 @@
         --link: #005bff;
         --accent: #cccccc;
       }
+      /* Fallback: follow system if JS doesn't run */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #000000;
+          --fg: #ffffff;
+          --link: #8fc9ed;
+          --accent: #333333;
+        }
+      }
+      /* Explicit override when JS sets it */
       [data-theme="dark"] {
         --bg: #000000;
         --fg: #ffffff;
         --link: #8fc9ed;
         --accent: #333333;
       }
+
       html, body { height: 100%; }
       body {
         margin: 0;
@@ -25,59 +37,60 @@
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
         line-height: 1.4;
         -webkit-font-smoothing: antialiased;
+        padding: 16px;
       }
-      a, a:visited { color: var(--link); text-decoration: none; }
-      .wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
-      .topbar {
-        display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        padding: 8px 0 16px; border-bottom: 1px solid var(--accent); margin-bottom: 16px;
+
+      /* Mostly irrelevant because the content is plain text,
+         but harmless if you ever show links */
+      a, a:visited {
+        color: var(--link);
+        text-decoration: none;
       }
-      .toggle {
-        font: inherit; background: transparent; color: var(--fg);
-        border: 1px solid var(--accent); padding: 6px 10px; border-radius: 6px; cursor: pointer;
-      }
+      a:hover { text-decoration: underline; }
+
+      .err { color: #d33; white-space: pre-wrap; }
+
       pre {
+        margin: 0;
         white-space: pre-wrap;
         word-wrap: break-word;
-        margin: 0;
       }
-      .err { color: #d33; }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="topbar">
-        <div><a href="index.html">← back</a></div>
-        <button class="toggle" id="themeToggle" aria-label="Toggle dark mode">toggle theme</button>
-      </div>
-      <pre id="content">Loading…</pre>
-    </div>
+    <pre id="content">Loading…</pre>
 
     <script>
-      (function theme() {
+      // Apply theme: use saved choice if present, else follow OS
+      (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
-        const saved = localStorage.getItem(KEY);
-        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const initial = saved || (prefersDark ? "dark" : "light");
-        root.setAttribute("data-theme", initial);
-        document.getElementById("themeToggle").addEventListener("click", () => {
-          const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-          root.setAttribute("data-theme", next);
-          localStorage.setItem(KEY, next);
-        });
+        let theme = null;
+
+        try {
+          const saved = localStorage.getItem(KEY);
+          if (saved === "dark" || saved === "light") theme = saved;
+        } catch (_) { /* storage blocked? ignore */ }
+
+        if (!theme) {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        root.setAttribute("data-theme", theme);
       }());
 
-      (function load() {
+      // Load the .txt specified by ?p=relative/path.txt and render as plain text
+      (function () {
+        const out = document.getElementById("content");
         const params = new URLSearchParams(location.search);
         const path = params.get("p");
-        const out = document.getElementById("content");
+
         if (!path) {
           out.textContent = "Missing ?p=relative/path/to/file.txt";
           out.className = "err";
           return;
         }
-        // Try to set document title from filename
+
+        // Set title from filename, then try to refine from first line
         document.title = path.split("/").pop() || "post";
 
         fetch(path, { cache: "no-store" })
@@ -86,10 +99,11 @@
             return r.text();
           })
           .then(text => {
-            // If the first line looks like a title, use it
             const firstLine = (text.split("\n")[0] || "").trim();
-            if (firstLine && firstLine.length <= 120) document.title = firstLine.replace(/^#\s*/, "");
-            out.textContent = text;
+            if (firstLine && firstLine.length <= 120) {
+              document.title = firstLine.replace(/^#\s*/, "");
+            }
+            out.textContent = text; // keep it plain text, not HTML
           })
           .catch(err => {
             out.textContent = "Failed to load " + path + "\n" + err;
