@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" data-theme="">
+  <head>
+    <meta charset="utf-8">
+    <title>post</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #111111;
+        --link: #005bff;
+        --accent: #cccccc;
+      }
+      [data-theme="dark"] {
+        --bg: #000000;
+        --fg: #ffffff;
+        --link: #8fc9ed;
+        --accent: #333333;
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        line-height: 1.4;
+        -webkit-font-smoothing: antialiased;
+      }
+      a, a:visited { color: var(--link); text-decoration: none; }
+      .wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 8px 0 16px; border-bottom: 1px solid var(--accent); margin-bottom: 16px;
+      }
+      .toggle {
+        font: inherit; background: transparent; color: var(--fg);
+        border: 1px solid var(--accent); padding: 6px 10px; border-radius: 6px; cursor: pointer;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+      }
+      .err { color: #d33; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div><a href="index.html">← back</a></div>
+        <button class="toggle" id="themeToggle" aria-label="Toggle dark mode">toggle theme</button>
+      </div>
+      <pre id="content">Loading…</pre>
+    </div>
+
+    <script>
+      (function theme() {
+        const KEY = "tc-theme";
+        const root = document.documentElement;
+        const saved = localStorage.getItem(KEY);
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const initial = saved || (prefersDark ? "dark" : "light");
+        root.setAttribute("data-theme", initial);
+        document.getElementById("themeToggle").addEventListener("click", () => {
+          const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          root.setAttribute("data-theme", next);
+          localStorage.setItem(KEY, next);
+        });
+      }());
+
+      (function load() {
+        const params = new URLSearchParams(location.search);
+        const path = params.get("p");
+        const out = document.getElementById("content");
+        if (!path) {
+          out.textContent = "Missing ?p=relative/path/to/file.txt";
+          out.className = "err";
+          return;
+        }
+        // Try to set document title from filename
+        document.title = path.split("/").pop() || "post";
+
+        fetch(path, { cache: "no-store" })
+          .then(r => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.text();
+          })
+          .then(text => {
+            // If the first line looks like a title, use it
+            const firstLine = (text.split("\n")[0] || "").trim();
+            if (firstLine && firstLine.length <= 120) document.title = firstLine.replace(/^#\s*/, "");
+            out.textContent = text;
+          })
+          .catch(err => {
+            out.textContent = "Failed to load " + path + "\n" + err;
+            out.className = "err";
+          });
+      }());
+    </script>
+  </body>
+</html>
