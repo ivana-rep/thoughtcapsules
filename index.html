@@ -12,7 +12,6 @@
         --link: #005bff;
         --accent: #cccccc;
       }
-      /* Fallback: follow system if JS doesn't run */
       @media (prefers-color-scheme: dark) {
         :root {
           --bg: #000000;
@@ -21,14 +20,12 @@
           --accent: #333333;
         }
       }
-      /* Explicit override when JS sets it */
       [data-theme="dark"] {
         --bg: #000000;
         --fg: #ffffff;
         --link: #8fc9ed;
         --accent: #333333;
       }
-
       html, body { height: 100%; }
       body {
         margin: 0;
@@ -39,13 +36,11 @@
         -webkit-font-smoothing: antialiased;
         padding: 16px;
       }
-
       a, a:visited {
         color: var(--link);
         text-decoration: none;
       }
       a:hover { text-decoration: underline; }
-
       pre {
         margin: 0;
         white-space: pre-wrap;
@@ -55,7 +50,7 @@
   </head>
   <body>
 <pre>
-↳ <a href="post.html?p=about.txt">about</a> 
+↳ <a href="post.html?p=about.txt">about</a>
 <br>/2025<br>
 ↳ 2025-08-27 <a href="post.html?p=2025/20250827.txt">Perfectionism</a>
 ↳ 2025-08-26 <a href="post.html?p=2025/20250826.txt">Down</a>
@@ -65,34 +60,5 @@
 ↳ 2025-08-22 <a href="post.html?p=2025/20250822.txt">Nexus and Explosive Modernity (Readings)</a>
 ↳ 2025-08-21 <a href="post.html?p=2025/20250821.txt">Empty Mirrors</a>
 </pre>
-
-    <script>
-      (function () {
-        const KEY = "tc-theme";
-        const root = document.documentElement;
-
-        function initialTheme() {
-          try {
-            const saved = localStorage.getItem(KEY);
-            if (saved === "dark" || saved === "light") return saved;
-          } catch (_) {}
-          return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
-
-        // Apply initial theme (overrides CSS fallback)
-        root.setAttribute("data-theme", initialTheme());
-
-        // Wire inline toggle link
-        const link = document.getElementById("themeToggle");
-        if (link) {
-          link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-            root.setAttribute("data-theme", next);
-            try { localStorage.setItem(KEY, next); } catch (_) {}
-          });
-        }
-      }());
-    </script>
   </body>
 </html>
