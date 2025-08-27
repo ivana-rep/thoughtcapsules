@@ -4,64 +4,53 @@
     <meta charset="utf-8">
     <title>thought capsules</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <style>
-      :root {
-        --bg: #ffffff;
-        --fg: #111111;
-        --link: #005bff; /* light-ish blue in light mode */
-        --accent: #cccccc;
-      }
-      [data-theme="dark"] {
-        --bg: #000000;
-        --fg: #ffffff;
-        --link: #8fc9ed; /* light blue you asked for */
-        --accent: #333333;
-      }
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --link: #005bff;
+    --accent: #cccccc;
+  }
+  /* Fallback: follow system if JS doesn't set [data-theme] */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --fg: #ffffff;
+      --link: #8fc9ed;
+      --accent: #333333;
+    }
+  }
+  /* Explicit override when JS sets it */
+  [data-theme="dark"] {
+    --bg: #000000;
+    --fg: #ffffff;
+    --link: #8fc9ed;
+    --accent: #333333;
+  }
 
-      html, body {
-        height: 100%;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        line-height: 1.35;
-        -webkit-font-smoothing: antialiased;
-        padding: 16px;
-      }
-
-      a, a:visited {
-        color: var(--link);
-        text-decoration: none;
-      }
-      a:hover { text-decoration: underline; }
-
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 0 16px;
-        border-bottom: 1px solid var(--accent);
-        margin-bottom: 16px;
-      }
-      .toggle {
-        font: inherit;
-        background: transparent;
-        color: var(--fg);
-        border: 1px solid var(--accent);
-        padding: 6px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      pre {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        margin: 0;
-      }
-    </style>
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    line-height: 1.35;
+    -webkit-font-smoothing: antialiased;
+    padding: 16px;
+  }
+  a, a:visited { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 0 16px; border-bottom: 1px solid var(--accent); margin-bottom: 16px;
+  }
+  .toggle {
+    font: inherit; background: transparent; color: var(--fg);
+    border: 1px solid var(--accent); padding: 6px 10px; border-radius: 6px; cursor: pointer;
+  }
+  pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+</style>
   </head>
   <body>
     <div class="topbar">
@@ -82,22 +71,33 @@
     </pre>
 
     <script>
-      (function () {
-        const KEY = "tc-theme";
-        const root = document.documentElement;
-        const saved = localStorage.getItem(KEY);
-        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const initial = saved || (prefersDark ? "dark" : "light");
-        root.setAttribute("data-theme", initial);
+  (function () {
+    const KEY = "tc-theme";
+    const root = document.documentElement;
 
-        const btn = document.getElementById("themeToggle");
-        function toggle() {
-          const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-          root.setAttribute("data-theme", next);
-          localStorage.setItem(KEY, next);
-        }
-        btn.addEventListener("click", toggle);
-      }());
-    </script>
+    function currentInitialTheme() {
+      try {
+        const saved = localStorage.getItem(KEY);
+        if (saved === "dark" || saved === "light") return saved;
+      } catch (_) { /* private mode blocking storage? ignore */ }
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return prefersDark ? "dark" : "light";
+    }
+
+    // Apply initial theme (overrides the media-query fallback)
+    const initial = currentInitialTheme();
+    root.setAttribute("data-theme", initial);
+
+    // Wire toggle if present
+    const btn = document.getElementById("themeToggle");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem(KEY, next); } catch (_) { /* ignore */ }
+      });
+    }
+  }());
+</script>
   </body>
 </html>
