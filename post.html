@@ -39,7 +39,8 @@
       // Load .txt and render with minimal linkify
       (function () {
         const out = document.getElementById("content");
-        const path = new URLSearchParams(location.search).get("p");
+        const params = new URLSearchParams(location.search);
+        const path = params.get("p");
         if (!path) { out.textContent = "Missing ?p=relative/path/to/file.txt"; out.className = "err"; return; }
 
         document.title = path.split("/").pop() || "post";
@@ -47,17 +48,18 @@
         fetch(path, { cache: "no-store" })
           .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
           .then(text => {
+            // Title from first line if short
             const firstLine = (text.split("\n")[0] || "").trim();
             if (firstLine && firstLine.length <= 120) document.title = firstLine.replace(/^#\s*/, "");
 
             // 1) Escape HTML
-            let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            let html = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-            // 2) Normalize common pasted-HTML junk after URLs (target/rel, stray '">')
+            // 2) Clean common pasted junk (' target="_blank" rel="noopener" or '"> fragments)
             html = html.replace(/\s*target="_blank"\s*rel="noopener"/g, "");
-            html = html.replace(/"&gt;/g, ""); // handles pasted '">'
+            html = html.replace(/"&gt;/g, "");
 
-            // 3) Markdown links: [label](https://url)
+            // 3) Markdown links: [label](https?:...)
             const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
             html = html.replace(mdLink, (_, label, url) =>
               `<a href="${url}" target="_blank" rel="noopener">${label}</a>`
@@ -69,15 +71,12 @@
               `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
             );
 
-            // 5) Bare URLs (stop at space, quote, angle, or closing paren)
-            const urlRe = /https?:\/\/[^\s<>"')]+/g;
-            html = html.replace(urlRe, (raw) => {
-              // Trim trailing punctuation that isn't part of URL
-              const m = raw.match(/^(.*?)([)\].,!?;:]+)?$/);
-              const url = m[1];
-              const tail = m[2] || "";
-              return `<a href="${url}" target="_blank" rel="noopener">${url}</a>${tail}`;
-            });
+            // 5) Bare URLs, but ONLY at text boundaries (not inside href="")
+            //    Preceder must be start, space, '(', '>', or ';'
+            const bare = /(^|[\s>(;])((https?:\/\/[^\s<>"')]+))/g;
+            html = html.replace(bare, (m, pre, url) =>
+              `${pre}<a href="${url}" target="_blank" rel="noopener">${url}</a>`
+            );
 
             out.innerHTML = html;
           })
