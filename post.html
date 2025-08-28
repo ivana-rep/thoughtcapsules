@@ -12,7 +12,6 @@
         --link: #005bff;
         --accent: #cccccc;
       }
-      /* Fallback: follow system if JS doesn't run */
       @media (prefers-color-scheme: dark) {
         :root {
           --bg: #000000;
@@ -21,7 +20,6 @@
           --accent: #333333;
         }
       }
-      /* Explicit override when JS sets it */
       [data-theme="dark"] {
         --bg: #000000;
         --fg: #ffffff;
@@ -40,12 +38,7 @@
         padding: 16px;
       }
 
-      /* Mostly irrelevant because the content is plain text,
-         but harmless if you ever show links */
-      a, a:visited {
-        color: var(--link);
-        text-decoration: none;
-      }
+      a, a:visited { color: var(--link); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
       .err { color: #d33; white-space: pre-wrap; }
@@ -61,24 +54,22 @@
     <pre id="content">Loading…</pre>
 
     <script>
-      // Apply theme: use saved choice if present, else follow OS
+      // Apply theme: saved choice or system default
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
         let theme = null;
-
         try {
           const saved = localStorage.getItem(KEY);
           if (saved === "dark" || saved === "light") theme = saved;
-        } catch (_) { /* storage blocked? ignore */ }
-
+        } catch (_) {}
         if (!theme) {
           theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         root.setAttribute("data-theme", theme);
       }());
 
-      // Load the .txt specified by ?p=relative/path.txt and render as plain text
+      // Load .txt file and render with linkify
       (function () {
         const out = document.getElementById("content");
         const params = new URLSearchParams(location.search);
@@ -90,7 +81,6 @@
           return;
         }
 
-        // Set title from filename, then try to refine from first line
         document.title = path.split("/").pop() || "post";
 
         fetch(path, { cache: "no-store" })
@@ -99,11 +89,31 @@
             return r.text();
           })
           .then(text => {
+            // Set page title from first line if short
             const firstLine = (text.split("\n")[0] || "").trim();
             if (firstLine && firstLine.length <= 120) {
               document.title = firstLine.replace(/^#\s*/, "");
             }
-            out.textContent = text; // keep it plain text, not HTML
+
+            // Escape HTML
+            let escaped = text
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+
+            // Linkify [label](url)
+            const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+            escaped = escaped.replace(mdLink, (match, label, url) =>
+              `<a href="${url}" target="_blank" rel="noopener">${label}</a>`
+            );
+
+            // Linkify bare URLs
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            escaped = escaped.replace(urlRegex, url =>
+              `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
+            );
+
+            out.innerHTML = escaped;
           })
           .catch(err => {
             out.textContent = "Failed to load " + path + "\n" + err;
