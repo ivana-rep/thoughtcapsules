@@ -6,55 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <style>
-      :root {
-        --bg: #ffffff;
-        --fg: #111111;
-        --link: #005bff;
-        --accent: #cccccc;
-      }
+      :root { --bg:#fff; --fg:#111; --link:#005bff; --accent:#ccc; }
       @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #000000;
-          --fg: #ffffff;
-          --link: #8fc9ed;
-          --accent: #333333;
-        }
+        :root { --bg:#000; --fg:#fff; --link:#8fc9ed; --accent:#333; }
       }
-      [data-theme="dark"] {
-        --bg: #000000;
-        --fg: #ffffff;
-        --link: #8fc9ed;
-        --accent: #333333;
-      }
-
-      html, body { height: 100%; }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        line-height: 1.4;
-        -webkit-font-smoothing: antialiased;
-        padding: 16px;
-      }
-
-      a, a:visited { color: var(--link); text-decoration: none; }
-      a:hover { text-decoration: underline; }
-
-      .err { color: #d33; white-space: pre-wrap; }
-
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
+      [data-theme="dark"] { --bg:#000; --fg:#fff; --link:#8fc9ed; --accent:#333; }
+      html,body{height:100%}
+      body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;line-height:1.4;-webkit-font-smoothing:antialiased;padding:16px;}
+      a,a:visited{color:var(--link);text-decoration:none}
+      a:hover{text-decoration:underline}
+      .err{color:#d33;white-space:pre-wrap}
+      pre{margin:0;white-space:pre-wrap;word-wrap:break-word}
     </style>
   </head>
   <body>
     <pre id="content">Loading…</pre>
 
     <script>
-      // Apply theme: saved choice or system default
+      // Theme: saved choice or system default
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -63,62 +32,56 @@
           const saved = localStorage.getItem(KEY);
           if (saved === "dark" || saved === "light") theme = saved;
         } catch (_) {}
-        if (!theme) {
-          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
+        if (!theme) theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         root.setAttribute("data-theme", theme);
       }());
 
-      // Load .txt file and render with linkify
+      // Load .txt and render with minimal linkify
       (function () {
         const out = document.getElementById("content");
-        const params = new URLSearchParams(location.search);
-        const path = params.get("p");
-
-        if (!path) {
-          out.textContent = "Missing ?p=relative/path/to/file.txt";
-          out.className = "err";
-          return;
-        }
+        const path = new URLSearchParams(location.search).get("p");
+        if (!path) { out.textContent = "Missing ?p=relative/path/to/file.txt"; out.className = "err"; return; }
 
         document.title = path.split("/").pop() || "post";
 
         fetch(path, { cache: "no-store" })
-          .then(r => {
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            return r.text();
-          })
+          .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
           .then(text => {
-            // Set page title from first line if short
             const firstLine = (text.split("\n")[0] || "").trim();
-            if (firstLine && firstLine.length <= 120) {
-              document.title = firstLine.replace(/^#\s*/, "");
-            }
+            if (firstLine && firstLine.length <= 120) document.title = firstLine.replace(/^#\s*/, "");
 
-            // Escape HTML
-            let escaped = text
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;");
+            // 1) Escape HTML
+            let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-            // Linkify [label](url)
+            // 2) Normalize common pasted-HTML junk after URLs (target/rel, stray '">')
+            html = html.replace(/\s*target="_blank"\s*rel="noopener"/g, "");
+            html = html.replace(/"&gt;/g, ""); // handles pasted '">'
+
+            // 3) Markdown links: [label](https://url)
             const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-            escaped = escaped.replace(mdLink, (match, label, url) =>
+            html = html.replace(mdLink, (_, label, url) =>
               `<a href="${url}" target="_blank" rel="noopener">${label}</a>`
             );
 
-            // Linkify bare URLs
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            escaped = escaped.replace(urlRegex, url =>
+            // 4) Angle-bracket autolinks: <https://url>
+            const angle = /&lt;(https?:\/\/[^&\s>]+)&gt;/g;
+            html = html.replace(angle, (_, url) =>
               `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
             );
 
-            out.innerHTML = escaped;
+            // 5) Bare URLs (stop at space, quote, angle, or closing paren)
+            const urlRe = /https?:\/\/[^\s<>"')]+/g;
+            html = html.replace(urlRe, (raw) => {
+              // Trim trailing punctuation that isn't part of URL
+              const m = raw.match(/^(.*?)([)\].,!?;:]+)?$/);
+              const url = m[1];
+              const tail = m[2] || "";
+              return `<a href="${url}" target="_blank" rel="noopener">${url}</a>${tail}`;
+            });
+
+            out.innerHTML = html;
           })
-          .catch(err => {
-            out.textContent = "Failed to load " + path + "\n" + err;
-            out.className = "err";
-          });
+          .catch(err => { out.textContent = "Failed to load " + path + "\n" + err; out.className = "err"; });
       }());
     </script>
   </body>
