@@ -26,12 +26,7 @@
       a, a:visited { color:var(--link); text-decoration:none; }
       a:hover { text-decoration:underline; }
 
-      pre {
-        margin:0;
-        white-space:pre-wrap;
-        word-wrap:break-word;
-      }
-
+      pre { margin:0; white-space:pre-wrap; word-wrap:break-word; }
       .err { color:#d33; white-space:pre-wrap; }
 
       mark {
@@ -60,14 +55,12 @@
         root.setAttribute("data-theme", theme);
       }());
 
-      // Load and render
-      (function () {
+      function load() {
         const out = document.getElementById("content");
-        const params = new URLSearchParams(location.search);
-        const path = params.get("p");
+        const path = location.hash.slice(1);
 
         if (!path) {
-          out.textContent = "Missing ?p=relative/path/to/file.txt";
+          out.textContent = "Missing #relative/path/to/file.txt";
           out.className = "err";
           return;
         }
@@ -85,18 +78,16 @@
               document.title = firstLine.replace(/^#\s*/, "");
             }
 
-            // Escape HTML
             let html = text
               .replace(/&/g,"&amp;")
               .replace(/</g,"&lt;")
               .replace(/>/g,"&gt;");
 
-            // Markdown links only (strip trailing punctuation)
-            const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-            html = html.replace(mdLink, (_, label, url) => {
-              url = url.replace(/[.,;:!?]+$/, "");
-              return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
-            });
+            // Markdown links
+            const mdLink = /\[([^\]]+)\]\(([^)]+)\)/g;
+            html = html.replace(mdLink, (_, label, url) =>
+              `<a href="${url}">${label}</a>`
+            );
 
             // Highlight
             html = html.replace(/!!([^!]+)!!/g, '<mark>$1</mark>');
@@ -107,7 +98,10 @@
             out.textContent = "Failed to load " + path + "\n" + err;
             out.className = "err";
           });
-      }());
+      }
+
+      window.addEventListener("hashchange", load);
+      load();
     </script>
   </body>
 </html>
