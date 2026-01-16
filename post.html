@@ -12,19 +12,22 @@
       }
       [data-theme="dark"] { --bg:#000; --fg:#fff; --link:#8fc9ed; --accent:#333; }
 
-      html,body { height:100% }
+      html, body { height:100%; }
       body {
         margin:0;
         background:var(--bg);
         color:var(--fg);
-        font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
         line-height:1.4;
         -webkit-font-smoothing:antialiased;
         padding:16px;
       }
 
-      a, a:visited { color:var(--link); text-decoration:none }
-      a:hover { text-decoration:underline }
+      a, a:visited {
+        color:var(--link);
+        text-decoration:none;
+      }
+      a:hover { text-decoration:underline; }
 
       pre {
         margin:0;
@@ -48,7 +51,7 @@
     <pre id="content">Loading…</pre>
 
     <script>
-      // Theme
+      // Theme: saved choice or system default
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -63,7 +66,7 @@
         root.setAttribute("data-theme", theme);
       }());
 
-      // Load .txt
+      // Load .txt and render
       (function () {
         const out = document.getElementById("content");
         const params = new URLSearchParams(location.search);
@@ -83,6 +86,7 @@
             return r.text();
           })
           .then(text => {
+            // Title from first line if short
             const firstLine = (text.split("\n")[0] || "").trim();
             if (firstLine && firstLine.length <= 120) {
               document.title = firstLine.replace(/^#\s*/, "");
@@ -94,7 +98,7 @@
               .replace(/</g,"&lt;")
               .replace(/>/g,"&gt;");
 
-            // 2) Clean junk
+            // 2) Clean common pasted junk
             html = html.replace(/\s*target="_blank"\s*rel="noopener"/g, "");
             html = html.replace(/"&gt;/g, "");
 
@@ -104,11 +108,12 @@
               `${pre}<a href="${url}" target="_blank" rel="noopener">${url}</a>`
             );
 
-            // 4) Markdown links
+            // 4) Markdown links (strip trailing punctuation)
             const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-            html = html.replace(mdLink, (_, label, url) =>
-              `<a href="${url}" target="_blank" rel="noopener">${label}</a>`
-            );
+            html = html.replace(mdLink, (_, label, url) => {
+              url = url.replace(/[.,;:!?]+$/, "");
+              return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+            });
 
             // 5) Angle-bracket autolinks
             const angle = /&lt;(https?:\/\/[^&\s>]+)&gt;/g;
@@ -116,7 +121,7 @@
               `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
             );
 
-            // 6) Highlight
+            // 6) Highlight: !!text!!
             html = html.replace(/!!([^!]+)!!/g, '<mark>$1</mark>');
 
             out.innerHTML = html;
