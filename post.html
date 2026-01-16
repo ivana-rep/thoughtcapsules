@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <style>
-      :root { --bg:#fff; --fg:#111; --link:#005bff; --accent:#ccc; }
+      :root { --bg:#fff; --fg:#111; --link:#005bff; }
       @media (prefers-color-scheme: dark) {
-        :root { --bg:#000; --fg:#fff; --link:#8fc9ed; --accent:#333; }
+        :root { --bg:#000; --fg:#fff; --link:#8fc9ed; }
       }
-      [data-theme="dark"] { --bg:#000; --fg:#fff; --link:#8fc9ed; --accent:#333; }
+      [data-theme="dark"] { --bg:#000; --fg:#fff; --link:#8fc9ed; }
 
       html, body { height:100%; }
       body {
@@ -23,10 +23,7 @@
         padding:16px;
       }
 
-      a, a:visited {
-        color:var(--link);
-        text-decoration:none;
-      }
+      a, a:visited { color:var(--link); text-decoration:none; }
       a:hover { text-decoration:underline; }
 
       pre {
@@ -35,10 +32,7 @@
         word-wrap:break-word;
       }
 
-      .err {
-        color:#d33;
-        white-space:pre-wrap;
-      }
+      .err { color:#d33; white-space:pre-wrap; }
 
       mark {
         background:#ffeb3b;
@@ -51,7 +45,7 @@
     <pre id="content">Loading…</pre>
 
     <script>
-      // Theme: saved choice or system default
+      // Theme
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -66,7 +60,7 @@
         root.setAttribute("data-theme", theme);
       }());
 
-      // Load .txt and render
+      // Load and render
       (function () {
         const out = document.getElementById("content");
         const params = new URLSearchParams(location.search);
@@ -86,42 +80,25 @@
             return r.text();
           })
           .then(text => {
-            // Title from first line if short
             const firstLine = (text.split("\n")[0] || "").trim();
             if (firstLine && firstLine.length <= 120) {
               document.title = firstLine.replace(/^#\s*/, "");
             }
 
-            // 1) Escape HTML
+            // Escape HTML
             let html = text
               .replace(/&/g,"&amp;")
               .replace(/</g,"&lt;")
               .replace(/>/g,"&gt;");
 
-            // 2) Clean common pasted junk
-            html = html.replace(/\s*target="_blank"\s*rel="noopener"/g, "");
-            html = html.replace(/"&gt;/g, "");
-
-            // 3) Bare URLs FIRST
-            const bare = /(^|[\s>(;])((https?:\/\/[^\s<>"')]+))/g;
-            html = html.replace(bare, (m, pre, url) =>
-              `${pre}<a href="${url}" target="_blank" rel="noopener">${url}</a>`
-            );
-
-            // 4) Markdown links (strip trailing punctuation)
+            // Markdown links only (strip trailing punctuation)
             const mdLink = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
             html = html.replace(mdLink, (_, label, url) => {
               url = url.replace(/[.,;:!?]+$/, "");
               return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
             });
 
-            // 5) Angle-bracket autolinks
-            const angle = /&lt;(https?:\/\/[^&\s>]+)&gt;/g;
-            html = html.replace(angle, (_, url) =>
-              `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
-            );
-
-            // 6) Highlight: !!text!!
+            // Highlight
             html = html.replace(/!!([^!]+)!!/g, '<mark>$1</mark>');
 
             out.innerHTML = html;
