@@ -50,16 +50,18 @@
     mark {
       background: none;
       padding: 0 2px;
+      color: inherit;
       background-image: linear-gradient(
         transparent 62%,
         var(--mark-light) 62%
       );
     }
 
-    /* DARK MODE — underline */
+    /* DARK MODE — underline + visible text */
     html[data-theme="dark"] mark {
       background: none;
       padding: 0;
+      color: var(--fg);
       text-decoration: underline;
       text-decoration-thickness: 2px;
       text-underline-offset: 0.15em;
@@ -90,9 +92,13 @@
 <!-- CONTENT LOADER + PARSER -->
 <script>
 (function () {
-  const params = new URLSearchParams(location.search);
-  const file = params.get("p");
   const content = document.getElementById("content");
+
+  const params = new URLSearchParams(location.search);
+  const queryFile = params.get("p");
+  const hashFile = location.hash ? location.hash.slice(1) : null;
+
+  const file = queryFile || hashFile;
 
   if (!file) {
     content.textContent = "Missing file parameter.";
@@ -117,11 +123,16 @@
         // highlight: !!text!!
         .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
 
-        // links: [text](url)
+        // links: [text](post.html?p=...)
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
-          const href = link.startsWith("/")
-            ? link
-            : BASE + link.replace(/^\/+/, "");
+          let href;
+          if (link.startsWith("post.html")) {
+            href = BASE + link;
+          } else if (link.startsWith("#")) {
+            href = BASE + "post.html" + link;
+          } else {
+            href = BASE + link.replace(/^\/+/, "");
+          }
           return `<a href="${href}">${text}</a>`;
         });
 
