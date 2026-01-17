@@ -1,16 +1,14 @@
-from datetime import date
-import calendar
 from pathlib import Path
 
-YEAR = 2026
-BASE_DIR = Path("..")  # /2026 folder
+YEAR = "2026"
+BASE = Path("2026")
 FULL_ARCHIVE = "2026_full-archive.html"
 
 TEMPLATE = """<!doctype html>
 <html lang="en" data-theme="">
   <head>
     <meta charset="utf-8">
-    <title>/2026/{month:02d}/Archive</title>
+    <title>/{year}/{month}/Archive</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
 
@@ -79,39 +77,28 @@ TEMPLATE = """<!doctype html>
 
   <body>
 <pre>
-<mark>/2026/{month:02d}/Archive</mark>
+<mark>/{year}/{month}/Archive</mark>
 ↳ <a href="{full_archive}">back to full archive</a>
 ↳ <a href="../index.html">back to index</a>
 
-{entries}
 </pre>
   </body>
 </html>
 """
 
-def generate_month(month):
-    days = calendar.monthrange(YEAR, month)[1]
-    lines = []
-
-    for day in range(days, 0, -1):
-        d = date(YEAR, month, day)
-        fname = f"{YEAR}{month:02d}{day:02d}.txt"
-        lines.append(f"↳ {d.isoformat()} <a href=\"../post.html?p=2026/{fname}\"></a>")
-
-    return "\n".join(lines)
-
 def main():
-    for month in range(2, 13):
-        entries = generate_month(month)
+    for m in range(2, 13):
+        month = f"{m:02d}"
+        path = BASE / f"{YEAR}{month}_archive.html"
+
         html = TEMPLATE.format(
+            year=YEAR,
             month=month,
-            entries=entries,
             full_archive=FULL_ARCHIVE
         )
 
-        out = BASE_DIR / f"2026{month:02d}_archive.html"
-        out.write_text(html, encoding="utf-8")
-        print(f"Generated {out.name}")
+        path.write_text(html, encoding="utf-8")
+        print(f"Recreated {path.name}")
 
 if __name__ == "__main__":
     main()
