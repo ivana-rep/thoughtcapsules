@@ -88,82 +88,23 @@
     <pre id="content">Loading…</pre>
 
     <script>
-      // Theme selection
-      (function () {
-        const KEY = "tc-theme";
-        const root = document.documentElement;
+  (function () {
+    const root = document.documentElement;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
 
-        let theme = null;
-        try {
-          theme = localStorage.getItem(KEY);
-        } catch (_) {}
+    function applyTheme(isDark) {
+      root.setAttribute("data-theme", isDark ? "dark" : "light");
+    }
 
-        if (theme !== "dark" && theme !== "light") {
-          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        }
+    // Apply immediately
+    applyTheme(mq.matches);
 
-        root.setAttribute("data-theme", theme);
-      }());
-
-      function getPath() {
-        if (location.hash && location.hash.length > 1) {
-          return location.hash.slice(1);
-        }
-        const params = new URLSearchParams(location.search);
-        return params.get("p");
-      }
-
-      function load() {
-        const out = document.getElementById("content");
-        const path = getPath();
-
-        if (!path) {
-          out.textContent = "Missing ?p=path/to/file.txt or #path/to/file.txt";
-          out.className = "err";
-          return;
-        }
-
-        document.title = path.split("/").pop() || "post";
-
-        fetch(path, { cache: "no-store" })
-          .then(r => {
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            return r.text();
-          })
-          .then(text => {
-            const firstLine = (text.split("\n")[0] || "").trim();
-            if (firstLine && firstLine.length <= 120) {
-              document.title = firstLine.replace(/^#\s*/, "");
-            }
-
-            let html = text
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;");
-
-            // Markdown links
-            html = html.replace(
-              /\[([^\]]+)\]\(([^)]+)\)/g,
-              (_, label, url) => `<a href="${url}">${label}</a>`
-            );
-
-            // Highlight syntax
-            html = html.replace(/!!([^!]+)!!/g, "<mark>$1</mark>");
-
-            out.innerHTML = html;
-            out.className = "";
-          })
-          .catch(err => {
-            out.textContent = "Failed to load " + path + "\n" + err;
-            out.className = "err";
-          });
-      }
-
-      window.addEventListener("hashchange", load);
-      window.addEventListener("popstate", load);
-      load();
-    </script>
+    // React to future changes
+    mq.addEventListener("change", e => {
+      applyTheme(e.matches);
+    });
+  }());
+</script>
+    
   </body>
 </html>
