@@ -5,42 +5,91 @@
     <title>post</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+
     <style>
-      :root { --bg:#fff; --fg:#111; --link:#005bff; }
+      :root {
+        --bg: #ffffff;
+        --fg: #111111;
+        --link: #005bff;
+        --mark-light: rgba(255, 241, 118, 0.9);
+        --mark-dark: rgba(255, 235, 59, 0.55);
+      }
+
       @media (prefers-color-scheme: dark) {
-        :root { --bg:#000; --fg:#fff; --link:#8fc9ed; }
+        :root {
+          --bg: #000000;
+          --fg: #ffffff;
+          --link: #8fc9ed;
+        }
       }
-      [data-theme="dark"] { --bg:#000; --fg:#fff; --link:#8fc9ed; }
 
-      html, body { height:100%; }
+      [data-theme="dark"] {
+        --bg: #000000;
+        --fg: #ffffff;
+        --link: #8fc9ed;
+      }
+
+      html, body {
+        height: 100%;
+      }
+
       body {
-        margin:0;
-        background:var(--bg);
-        color:var(--fg);
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        line-height:1.4;
-        -webkit-font-smoothing:antialiased;
-        padding:16px;
+        line-height: 1.4;
+        -webkit-font-smoothing: antialiased;
+        padding: 16px;
       }
 
-      a, a:visited { color:var(--link); text-decoration:none; }
-      a:hover { text-decoration:underline; }
+      a, a:visited {
+        color: var(--link);
+        text-decoration: none;
+      }
 
-      pre { margin:0; white-space:pre-wrap; word-wrap:break-word; }
-      .err { color:#d33; white-space:pre-wrap; }
+      a:hover {
+        text-decoration: underline;
+      }
 
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .err {
+        color: #d33;
+        white-space: pre-wrap;
+      }
+
+      /* Marker-style highlight */
       mark {
-        background:#ffeb3b;
-        color:#000;
-        padding:0 2px;
+        background: none;
+        color: inherit;
+        padding: 0 2px;
+        background-image: linear-gradient(
+          transparent 62%,
+          var(--mark-light) 62%
+        );
+      }
+
+      @media (prefers-color-scheme: dark) {
+        mark {
+          background-image: linear-gradient(
+            transparent 55%,
+            var(--mark-dark) 55%
+          );
+        }
       }
     </style>
   </head>
+
   <body>
     <pre id="content">Loading…</pre>
 
     <script>
-      // Theme
+      // Theme selection
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -56,11 +105,9 @@
       }());
 
       function getPath() {
-        // 1) hash-based
         if (location.hash && location.hash.length > 1) {
           return location.hash.slice(1);
         }
-        // 2) query-based (legacy)
         const params = new URLSearchParams(location.search);
         return params.get("p");
       }
@@ -89,18 +136,18 @@
             }
 
             let html = text
-              .replace(/&/g,"&amp;")
-              .replace(/</g,"&lt;")
-              .replace(/>/g,"&gt;");
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
 
-            // Markdown links (keep your existing style)
+            // Markdown links
             const mdLink = /\[([^\]]+)\]\(([^)]+)\)/g;
             html = html.replace(mdLink, (_, label, url) =>
               `<a href="${url}">${label}</a>`
             );
 
-            // Highlight
-            html = html.replace(/!!([^!]+)!!/g, '<mark>$1</mark>');
+            // Marker highlight
+            html = html.replace(/!!([^!]+)!!/g, "<mark>$1</mark>");
 
             out.innerHTML = html;
             out.className = "";
