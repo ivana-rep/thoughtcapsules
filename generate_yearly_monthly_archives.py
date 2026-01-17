@@ -14,7 +14,7 @@ YEAR_DIR = os.path.join(BASE_DIR, str(YEAR))
 # =========================
 
 HTML_HEAD = """<!doctype html>
-<html lang="en" data-theme="">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>{title}</title>
@@ -27,8 +27,9 @@ HTML_HEAD = """<!doctype html>
         --bg: #ffffff;
         --fg: #111111;
         --link: #005bff;
+
         --mark-light: rgba(255, 241, 118, 0.9);
-        --mark-dark: rgba(255, 235, 59, 0.55);
+        --mark-dark: rgba(255, 235, 59, 0.9);
       }}
 
       @media (prefers-color-scheme: dark) {{
@@ -39,9 +40,7 @@ HTML_HEAD = """<!doctype html>
         }}
       }}
 
-      html, body {{
-        height: 100%;
-      }}
+      html, body {{ height: 100%; }}
 
       body {{
         margin: 0;
@@ -58,9 +57,7 @@ HTML_HEAD = """<!doctype html>
         text-decoration: none;
       }}
 
-      a:hover {{
-        text-decoration: underline;
-      }}
+      a:hover {{ text-decoration: underline; }}
 
       pre {{
         margin: 0;
@@ -68,6 +65,7 @@ HTML_HEAD = """<!doctype html>
         word-wrap: break-word;
       }}
 
+      /* LIGHT MODE — marker behind text (EXACTLY like index.html) */
       mark {{
         background: none;
         color: inherit;
@@ -78,12 +76,16 @@ HTML_HEAD = """<!doctype html>
         );
       }}
 
+      /* DARK MODE — underline (EXACTLY like index.html) */
       @media (prefers-color-scheme: dark) {{
         mark {{
-          background-image: linear-gradient(
-            transparent 55%,
-            var(--mark-dark) 55%
-          );
+          background: none;
+          padding: 0;
+          color: var(--fg);
+          text-decoration: underline;
+          text-decoration-thickness: 2px;
+          text-underline-offset: 0.15em;
+          text-decoration-color: var(--mark-dark);
         }}
       }}
     </style>
@@ -133,7 +135,7 @@ for month in notes_by_month:
     notes_by_month[month].sort(reverse=True)
 
 # =========================
-# YEARLY ARCHIVE (FIXED)
+# YEARLY ARCHIVE
 # =========================
 
 year_lines = []
@@ -146,7 +148,7 @@ for month in sorted(notes_by_month.keys(), reverse=True):
             f"↳ {date.strftime('%Y-%m-%d')} "
             f"<a href=\"../post.html?p={YEAR}/{file}\">{title}</a>"
         )
-    year_lines.append("")  # ← BLANK LINE BETWEEN MONTHS
+    year_lines.append("")  # blank line between months
 
 year_html = (
     HTML_HEAD.format(title=f"/{YEAR}/Full Archive")
