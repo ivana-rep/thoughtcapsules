@@ -1,87 +1,106 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>thinking capsules</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <head>
+    <meta charset="utf-8">
+    <title>thinking capsules</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
 
-  <style>
-    :root {
-      --bg: #ffffff;
-      --fg: #111111;
-      --link: #005bff;
-      --mark-light: rgba(255, 241, 118, 0.9);
-      --mark-dark: rgba(255, 235, 59, 0.9);
-    }
-
-    @media (prefers-color-scheme: dark) {
+    <style>
       :root {
-        --bg: #000000;
-        --fg: #ffffff;
-        --link: #8fc9ed;
+        --bg: #ffffff;
+        --fg: #111111;
+        --link: #005bff;
+
+        --mark-light: rgba(255, 241, 118, 0.9);
+        --mark-dark: rgba(255, 235, 59, 0.9);
       }
-    }
 
-    body {
-      margin: 0;
-      padding: 16px;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      line-height: 1.35;
-      -webkit-font-smoothing: antialiased;
-    }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #000000;
+          --fg: #ffffff;
+          --link: #8fc9ed;
+        }
+      }
 
-    a {
-      color: var(--link);
-      text-decoration: none;
-    }
+      html, body { height: 100%; }
 
-    a:hover { text-decoration: underline; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        line-height: 1.35;
+        -webkit-font-smoothing: antialiased;
+        padding: 16px;
+      }
 
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-    }
+      a, a:visited {
+        color: var(--link);
+        text-decoration: none;
+      }
 
-    /* light mode highlight */
-    mark {
-      background: none;
-      padding: 0 2px;
-      background-image: linear-gradient(
-        transparent 62%,
-        var(--mark-light) 62%
-      );
-    }
+      a:hover { text-decoration: underline; }
 
-    /* dark mode underline */
-    @media (prefers-color-scheme: dark) {
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      /* LIGHT MODE — marker behind text */
       mark {
         background: none;
-        padding: 0;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 0.15em;
-        text-decoration-color: var(--mark-dark);
+        color: inherit;
+        padding: 0 2px;
+        background-image: linear-gradient(
+          transparent 62%,
+          var(--mark-light) 62%
+        );
       }
-    }
-  </style>
-</head>
 
-<body>
-<pre id="content">Loading…</pre>
+      /* DARK MODE — underline (no yellow block) */
+      @media (prefers-color-scheme: dark) {
+        mark {
+          background: none;
+          padding: 0;
+          text-decoration: underline;
+          text-decoration-thickness: 2px;
+          text-underline-offset: 0.15em;
+          text-decoration-color: var(--mark-dark);
+        }
+      }
+    </style>
+  </head>
 
-<script>
-  fetch("index.txt")
-    .then(r => r.text())
-    .then(t => {
-      document.getElementById("content").innerHTML = t;
-    })
-    .catch(() => {
-      document.getElementById("content").textContent =
-        "Error loading index.";
-    });
-</script>
-</body>
+  <body>
+<pre>
+↳ <mark>thinking capsules</mark> | <a href="post.html?p=about.txt">about</a> | <a href="yearly-archives.html">yearly archives</a>
+
+<a href="2026/2026_full-archive.html">/2026</a>
+<a href="2026/202601_archive.html"><mark>01</mark></a> | <a href="2026/202602_archive.html">02</a> | <a href="2026/202603_archive.html">03</a> | <a href="2026/202604_archive.html">04</a> | <a href="2026/202605_archive.html">05</a> | <a href="2026/202606_archive.html">06</a> | <a href="2026/202607_archive.html">07</a> | <a href="2026/202608_archive.html">08</a> | <a href="2026/202609_archive.html">09</a> | <a href="2026/202610_archive.html">10</a> | <a href="2026/202611_archive.html">11</a> | <a href="2026/202612_archive.html">12</a>
+
+<mark>/Current Month</mark>
+
+↳ 2026-01-18 <a href="post.html?p=2026/20260118.txt">There's a line of thought</a>
+↳ 2026-01-17 <a href="post.html?p=2026/20260117.txt">Log</a>
+↳ 2026-01-16 <a href="post.html?p=2026/20260116.txt">Autopilot</a>
+↳ 2026-01-15 <a href="post.html?p=2026/20260115.txt">Brain</a>
+↳ 2026-01-14 <a href="post.html?p=2026/20260114.txt">Social interactions</a>
+↳ 2026-01-13 <a href="post.html?p=2026/20260113.txt">Boredom</a>
+↳ 2026-01-12 <a href="post.html?p=2026/20260112.txt">Start</a>
+↳ 2026-01-11 <a href="post.html?p=2026/20260111.txt">Relief</a>
+↳ 2026-01-10 <a href="post.html?p=2026/20260110.txt">Decisions</a>
+↳ 2026-01-09 <a href="post.html?p=2026/20260109.txt">Through</a>
+↳ 2026-01-08 <a href="post.html?p=2026/20260108.txt">Obvious</a>
+↳ 2026-01-07 <a href="post.html?p=2026/20260107.txt">Plan</a>
+↳ 2026-01-06 <a href="post.html?p=2026/20260106.txt">Anxiety</a>
+↳ 2026-01-05 <a href="post.html?p=2026/20260105.txt">Failure</a>
+↳ 2026-01-04 <a href="post.html?p=2026/20260104.txt">Disconnect</a>
+↳ 2026-01-03 <a href="post.html?p=2026/20260103.txt">What it's not</a>
+↳ 2026-01-02 <a href="post.html?p=2026/20260102.txt">Obsession</a>
+↳ 2026-01-01 <a href="post.html?p=2026/20260101.txt">Negative</a>
+</pre>
+  </body>
 </html>
