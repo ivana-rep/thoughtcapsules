@@ -2,12 +2,11 @@ from pathlib import Path
 import sys
 import re
 
-# -------- CONFIG --------
+# ---------- CONFIG ----------
 YEAR = "2026"
 INDEX_FILE = Path("index.html")
 FULL_ARCHIVE = Path("2026/2026_full-archive.html")
-MONTH_ARCHIVE = None  # inferred from filename
-# ------------------------
+# ----------------------------
 
 def fail(msg):
     print(f"ERROR: {msg}")
@@ -23,18 +22,23 @@ def extract_title(txt_path):
             return m.groups()
     fail("No title line found")
 
-def make_entry(y, m, d, title):
-    return f'↳ {y}-{m}-{d} <a href="post.html?p=2026/{y}{m}{d}.txt">{title}</a>'
+def make_entry(y, m, d, title, prefix):
+    return (
+        f'↳ {y}-{m}-{d} '
+        f'<a href="{prefix}post.html?p=2026/{y}{m}{d}.txt">{title}</a>'
+    )
 
 def insert_after_anchor(path, entry):
-    text = path.read_text(encoding="utf-8").splitlines()
-    if any(entry in line for line in text):
+    lines = path.read_text(encoding="utf-8").splitlines()
+
+    if any(entry in line for line in lines):
         fail(f"Entry already exists in {path}")
 
-    for i in range(len(text) - 1):
-        if text[i].strip() == "" and text[i+1].startswith("↳ 20"):
-            text.insert(i+1, entry)
-            path.write_text("\n".join(text), encoding="utf-8")
+    for i in range(len(lines) - 1):
+        # Insert after a blank line, before the first date entry
+        if lines[i].strip() == "" and lines[i + 1].startswith("↳ 20"):
+            lines.insert(i + 1, entry)
+            path.write_text("\n".join(lines), encoding="utf-8")
             return
 
     fail(f"Could not find insertion point in {path}")
@@ -44,7 +48,7 @@ def main():
         fail("Usage: python3 update_daily_note.py YYYYMMDD")
 
     ymd = sys.argv[1]
-    if not re.match(r"\d{8}", ymd):
+    if not re.fullmatch(r"\d{8}", ymd):
         fail("Date must be YYYYMMDD")
 
     txt_path = Path(f"2026/{ymd}.txt")
@@ -52,14 +56,18 @@ def main():
         fail(f"{txt_path} not found")
 
     y, m, d, title = extract_title(txt_path)
-    entry = make_entry(y, m, d, title)
+
+    index_entry = make_entry(y, m, d, title, "")
+    archive_entry = make_entry(y, m, d, title, "../")
 
     month_archive = Path(f"2026/{y}{m}_archive.html")
 
-    for p in [INDEX_FILE, FULL_ARCHIVE, month_archive]:
-        if not p.exists():
-            fail(f"{p} not found")
-        insert_after_anchor(p, entry)
+    if not month_archive.exists():
+        fail(f"{month_archive} not found")
+
+    insert_after_anchor(INDEX_FILE, index_entry)
+    insert_after_anchor(FULL_ARCHIVE, archive_entry)
+    insert_after_anchor(month_archive, archive_entry)
 
     print("Daily note updated successfully.")
 
