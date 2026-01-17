@@ -36,9 +36,7 @@
       text-decoration: none;
     }
 
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
 
     pre {
       margin: 0;
@@ -46,7 +44,7 @@
       word-wrap: break-word;
     }
 
-    /* LIGHT MODE — marker */
+    /* light mode highlight */
     mark {
       background: none;
       padding: 0 2px;
@@ -57,7 +55,7 @@
       );
     }
 
-    /* DARK MODE — underline + visible text */
+    /* dark mode highlight */
     html[data-theme="dark"] mark {
       background: none;
       padding: 0;
@@ -74,30 +72,28 @@
 
 <pre id="content">Loading…</pre>
 
-<!-- THEME: follow system, live -->
+<!-- theme sync -->
 <script>
 (function () {
   const root = document.documentElement;
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
 
-  function applyTheme(isDark) {
+  function apply(isDark) {
     root.setAttribute("data-theme", isDark ? "dark" : "light");
   }
 
-  applyTheme(mq.matches);
-  mq.addEventListener("change", e => applyTheme(e.matches));
+  apply(mq.matches);
+  mq.addEventListener("change", e => apply(e.matches));
 })();
 </script>
 
-<!-- CONTENT LOADER + PARSER -->
+<!-- loader + parser -->
 <script>
 (function () {
   const content = document.getElementById("content");
 
   const params = new URLSearchParams(location.search);
-  const queryFile = params.get("p");
-  const hashFile = location.hash ? location.hash.slice(1) : null;
-  const file = queryFile || hashFile;
+  const file = params.get("p") || (location.hash ? location.hash.slice(1) : null);
 
   if (!file) {
     content.textContent = "Missing file parameter.";
@@ -109,7 +105,7 @@
 
   fetch(url)
     .then(r => {
-      if (!r.ok) throw new Error("Fetch failed");
+      if (!r.ok) throw new Error();
       return r.text();
     })
     .then(t => {
@@ -119,22 +115,28 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
 
-        // highlight: !!text!!
+        // highlights
         .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
 
-        // links: [text](...)
+        // links
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
-          // CASE 1: already correct post link → leave it alone
-          if (link.startsWith("post.html")) {
+
+          // 1) absolute URLs → leave untouched
+          if (/^https?:\/\//.test(link)) {
+            return `<a href="${link}">${text}</a>`;
+          }
+
+          // 2) post.html?p=...
+          if (link.startsWith("post.html?")) {
             return `<a href="${BASE}${link}">${text}</a>`;
           }
 
-          // CASE 2: hash-only link
-          if (link.startsWith("#")) {
-            return `<a href="${BASE}post.html${link}">${text}</a>`;
+          // 3) post.html#...
+          if (link.startsWith("post.html#")) {
+            return `<a href="${BASE}${link}">${text}</a>`;
           }
 
-          // CASE 3: bare txt path
+          // 4) bare path → convert
           return `<a href="${BASE}post.html?p=${link.replace(/^\/+/, "")}">${text}</a>`;
         });
 
