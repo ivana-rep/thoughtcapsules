@@ -11,7 +11,6 @@
       --bg: #ffffff;
       --fg: #111111;
       --link: #005bff;
-
       --mark-light: rgba(255, 241, 118, 0.9);
       --mark-dark: rgba(255, 235, 59, 0.9);
     }
@@ -88,7 +87,7 @@
 })();
 </script>
 
-<!-- CONTENT LOADER: bulletproof -->
+<!-- CONTENT LOADER + PARSER -->
 <script>
 (function () {
   const params = new URLSearchParams(location.search);
@@ -100,7 +99,6 @@
     return;
   }
 
-  // ALWAYS fetch from repo root
   const BASE = "/thoughtcapsules/";
   const url = BASE + file.replace(/^\/+/, "");
 
@@ -110,7 +108,24 @@
       return r.text();
     })
     .then(t => {
-      content.textContent = t;
+      let html = t
+        // escape HTML
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+
+        // highlight: !!text!!
+        .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
+
+        // links: [text](url)
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
+          const href = link.startsWith("/")
+            ? link
+            : BASE + link.replace(/^\/+/, "");
+          return `<a href="${href}">${text}</a>`;
+        });
+
+      content.innerHTML = html;
     })
     .catch(() => {
       content.textContent = "Error loading file.";
