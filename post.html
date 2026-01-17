@@ -97,7 +97,6 @@
   const params = new URLSearchParams(location.search);
   const queryFile = params.get("p");
   const hashFile = location.hash ? location.hash.slice(1) : null;
-
   const file = queryFile || hashFile;
 
   if (!file) {
@@ -123,17 +122,20 @@
         // highlight: !!text!!
         .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
 
-        // links: [text](post.html?p=...)
+        // links: [text](...)
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
-          let href;
+          // CASE 1: already correct post link → leave it alone
           if (link.startsWith("post.html")) {
-            href = BASE + link;
-          } else if (link.startsWith("#")) {
-            href = BASE + "post.html" + link;
-          } else {
-            href = BASE + link.replace(/^\/+/, "");
+            return `<a href="${BASE}${link}">${text}</a>`;
           }
-          return `<a href="${href}">${text}</a>`;
+
+          // CASE 2: hash-only link
+          if (link.startsWith("#")) {
+            return `<a href="${BASE}post.html${link}">${text}</a>`;
+          }
+
+          // CASE 3: bare txt path
+          return `<a href="${BASE}post.html?p=${link.replace(/^\/+/, "")}">${text}</a>`;
         });
 
       content.innerHTML = html;
