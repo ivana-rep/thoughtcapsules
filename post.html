@@ -11,8 +11,8 @@
         --bg: #ffffff;
         --fg: #111111;
         --link: #005bff;
-        --mark-light: rgba(255, 241, 118, 0.9);
-        --mark-dark: rgba(255, 235, 59, 0.55);
+        --mark-light: rgba(255, 241, 118, 0.95);
+        --mark-dark-line: rgba(255, 235, 59, 0.85);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -63,7 +63,7 @@
         white-space: pre-wrap;
       }
 
-      /* Marker-style highlight */
+      /* LIGHT MODE: marker behind text */
       mark {
         background: none;
         color: inherit;
@@ -74,12 +74,12 @@
         );
       }
 
+      /* DARK MODE: subtle underline, no fill */
       @media (prefers-color-scheme: dark) {
         mark {
-          background-image: linear-gradient(
-            transparent 55%,
-            var(--mark-dark) 55%
-          );
+          background-image: none;
+          padding: 0;
+          box-shadow: inset 0 -0.35em 0 -0.2em var(--mark-dark-line);
         }
       }
     </style>
@@ -89,6 +89,7 @@
     <pre id="content">Loading…</pre>
 
     <script>
+      // Theme selection
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -139,10 +140,13 @@
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;");
 
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) =>
+            // Markdown links
+            const mdLink = /\[([^\]]+)\]\(([^)]+)\)/g;
+            html = html.replace(mdLink, (_, label, url) =>
               `<a href="${url}">${label}</a>`
             );
 
+            // Highlight
             html = html.replace(/!!([^!]+)!!/g, "<mark>$1</mark>");
 
             out.innerHTML = html;
