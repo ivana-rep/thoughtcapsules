@@ -11,16 +11,11 @@
         --bg: #ffffff;
         --fg: #111111;
         --link: #005bff;
-        --mark-light: rgba(255, 241, 118, 0.95);
-        --mark-dark-line: rgba(255, 235, 59, 0.85);
-      }
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #000000;
-          --fg: #ffffff;
-          --link: #8fc9ed;
-        }
+        /* highlight geometry */
+        --mark-cutoff: 62%;
+        --mark-light: rgba(255, 241, 118, 0.95);
+        --mark-dark: rgba(255, 235, 59, 0.9);
       }
 
       [data-theme="dark"] {
@@ -63,24 +58,30 @@
         white-space: pre-wrap;
       }
 
-      /* LIGHT MODE: marker behind text (DO NOT TOUCH) */
+      /* =========================
+         LIGHT MODE (FROZEN)
+         Marker behind text
+         ========================= */
       mark {
         background: none;
         color: inherit;
         padding: 0 2px;
         background-image: linear-gradient(
-          transparent 62%,
-          var(--mark-light) 62%
+          transparent var(--mark-cutoff),
+          var(--mark-light) var(--mark-cutoff)
         );
+        background-repeat: no-repeat;
       }
 
-      /* DARK MODE: thin underline accent */
-      @media (prefers-color-scheme: dark) {
-        mark {
-          background-image: none;
-          padding: 0;
-          box-shadow: inset 0 -0.18em 0 0 var(--mark-dark-line);
-        }
+      /* =========================
+         DARK MODE
+         Same geometry, 1px line
+         ========================= */
+      [data-theme="dark"] mark {
+        background-image: linear-gradient(var(--mark-dark), var(--mark-dark));
+        background-size: 100% 1px;
+        background-repeat: no-repeat;
+        background-position: 0 var(--mark-cutoff);
       }
     </style>
   </head>
@@ -98,9 +99,7 @@
           const saved = localStorage.getItem(KEY);
           if (saved === "dark" || saved === "light") theme = saved;
         } catch (_) {}
-        if (!theme) {
-          theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
+        if (!theme) theme = "dark";
         root.setAttribute("data-theme", theme);
       }());
 
