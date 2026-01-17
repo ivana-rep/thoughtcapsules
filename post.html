@@ -1,110 +1,122 @@
 <!doctype html>
-<html lang="en" data-theme="">
-  <head>
-    <meta charset="utf-8">
-    <title>post</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>thinking capsules</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
 
-    <style>
-      :root {
-        --bg: #ffffff;
-        --fg: #111111;
-        --link: #005bff;
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --link: #005bff;
 
-        --mark-light: rgba(255, 241, 118, 0.95);
-        --mark-dark: rgba(255, 235, 59, 0.9);
-      }
-
-      [data-theme="dark"] {
-        --bg: #000000;
-        --fg: #ffffff;
-        --link: #8fc9ed;
-      }
-
-      html, body {
-        height: 100%;
-      }
-
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        line-height: 1.4;
-        -webkit-font-smoothing: antialiased;
-        padding: 16px;
-      }
-
-      a, a:visited {
-        color: var(--link);
-        text-decoration: none;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-
-      .err {
-        color: #d33;
-        white-space: pre-wrap;
-      }
-
-      /* =========================
-         LIGHT MODE — MARKER
-         ========================= */
-      mark {
-        background: none;
-        color: inherit;
-        padding: 0 2px;
-        background-image: linear-gradient(
-          transparent 62%,
-          var(--mark-light) 62%
-        );
-        background-repeat: no-repeat;
-      }
-
-      /* =========================
-         DARK MODE — UNDERLINE
-         ========================= */
-      [data-theme="dark"] mark {
-        background: none !important;
-        padding: 0;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 0.15em;
-        text-decoration-color: var(--mark-dark);
-      }
-    </style>
-  </head>
-
-  <body>
-    <pre id="content">Loading…</pre>
-
-    <script>
-  (function () {
-    const root = document.documentElement;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-
-    function applyTheme(isDark) {
-      root.setAttribute("data-theme", isDark ? "dark" : "light");
+      --mark-light: rgba(255, 241, 118, 0.9);
+      --mark-dark: rgba(255, 235, 59, 0.9);
     }
 
-    // Apply immediately
-    applyTheme(mq.matches);
+    html[data-theme="dark"] {
+      --bg: #000000;
+      --fg: #ffffff;
+      --link: #8fc9ed;
+    }
 
-    // React to future changes
-    mq.addEventListener("change", e => {
-      applyTheme(e.matches);
-    });
-  }());
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.35;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* LIGHT MODE — marker */
+    mark {
+      background: none;
+      padding: 0 2px;
+      background-image: linear-gradient(
+        transparent 62%,
+        var(--mark-light) 62%
+      );
+    }
+
+    /* DARK MODE — underline */
+    html[data-theme="dark"] mark {
+      background: none;
+      padding: 0;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.15em;
+      text-decoration-color: var(--mark-dark);
+    }
+  </style>
+</head>
+
+<body>
+
+<pre id="content">Loading…</pre>
+
+<!-- THEME: follow system, live -->
+<script>
+(function () {
+  const root = document.documentElement;
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function applyTheme(isDark) {
+    root.setAttribute("data-theme", isDark ? "dark" : "light");
+  }
+
+  applyTheme(mq.matches);
+  mq.addEventListener("change", e => applyTheme(e.matches));
+})();
 </script>
-    
-  </body>
+
+<!-- CONTENT LOADER: bulletproof -->
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const file = params.get("p");
+  const content = document.getElementById("content");
+
+  if (!file) {
+    content.textContent = "Missing file parameter.";
+    return;
+  }
+
+  // ALWAYS fetch from repo root
+  const BASE = "/thoughtcapsules/";
+  const url = BASE + file.replace(/^\/+/, "");
+
+  fetch(url)
+    .then(r => {
+      if (!r.ok) throw new Error("Fetch failed");
+      return r.text();
+    })
+    .then(t => {
+      content.textContent = t;
+    })
+    .catch(() => {
+      content.textContent = "Error loading file.";
+    });
+})();
+</script>
+
+</body>
 </html>
