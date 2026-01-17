@@ -38,9 +38,7 @@
       text-decoration: none;
     }
 
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
 
     pre {
       margin: 0;
@@ -72,45 +70,18 @@
 </head>
 
 <body>
-<pre>
-↳ <mark>thinking capsules</mark> |
-<a href="/thoughtcapsules/post.html?p=about.txt">about</a> |
-<a href="/thoughtcapsules/yearly-archives.html">yearly archives</a>
+<pre id="content">Loading…</pre>
 
-/2026
-<a href="/thoughtcapsules/2026/202601_archive.html"><mark>01</mark></a> |
-<a href="/thoughtcapsules/2026/202602_archive.html">02</a> |
-<a href="/thoughtcapsules/2026/202603_archive.html">03</a> |
-<a href="/thoughtcapsules/2026/202604_archive.html">04</a> |
-<a href="/thoughtcapsules/2026/202605_archive.html">05</a> |
-<a href="/thoughtcapsules/2026/202606_archive.html">06</a> |
-<a href="/thoughtcapsules/2026/202607_archive.html">07</a> |
-<a href="/thoughtcapsules/2026/202608_archive.html">08</a> |
-<a href="/thoughtcapsules/2026/202609_archive.html">09</a> |
-<a href="/thoughtcapsules/2026/202610_archive.html">10</a> |
-<a href="/thoughtcapsules/2026/202611_archive.html">11</a> |
-<a href="/thoughtcapsules/2026/202612_archive.html">12</a>
-
-<mark>/Current Month</mark>
-
-↳ 2026-01-18 <a href="/thoughtcapsules/post.html?p=2026/20260118.txt">There's a line of thought</a>
-↳ 2026-01-17 <a href="/thoughtcapsules/post.html?p=2026/20260117.txt">Log</a>
-↳ 2026-01-16 <a href="/thoughtcapsules/post.html?p=2026/20260116.txt">Autopilot</a>
-↳ 2026-01-15 <a href="/thoughtcapsules/post.html?p=2026/20260115.txt">Brain</a>
-↳ 2026-01-14 <a href="/thoughtcapsules/post.html?p=2026/20260114.txt">Social interactions</a>
-↳ 2026-01-13 <a href="/thoughtcapsules/post.html?p=2026/20260113.txt">Boredom</a>
-↳ 2026-01-12 <a href="/thoughtcapsules/post.html?p=2026/20260112.txt">Start</a>
-↳ 2026-01-11 <a href="/thoughtcapsules/post.html?p=2026/20260111.txt">Relief</a>
-↳ 2026-01-10 <a href="/thoughtcapsules/post.html?p=2026/20260110.txt">Decisions</a>
-↳ 2026-01-09 <a href="/thoughtcapsules/post.html?p=2026/20260109.txt">Through</a>
-↳ 2026-01-08 <a href="/thoughtcapsules/post.html?p=2026/20260108.txt">Obvious</a>
-↳ 2026-01-07 <a href="/thoughtcapsules/post.html?p=2026/20260107.txt">Plan</a>
-↳ 2026-01-06 <a href="/thoughtcapsules/post.html?p=2026/20260106.txt">Anxiety</a>
-↳ 2026-01-05 <a href="/thoughtcapsules/post.html?p=2026/20260105.txt">Failure</a>
-↳ 2026-01-04 <a href="/thoughtcapsules/post.html?p=2026/20260104.txt">Disconnect</a>
-↳ 2026-01-03 <a href="/thoughtcapsules/post.html?p=2026/20260103.txt">What it's not</a>
-↳ 2026-01-02 <a href="/thoughtcapsules/post.html?p=2026/20260102.txt">Obsession</a>
-↳ 2026-01-01 <a href="/thoughtcapsules/post.html?p=2026/20260101.txt">Negative</a>
-</pre>
+<script>
+  fetch("index.txt")
+    .then(r => r.text())
+    .then(t => {
+      document.getElementById("content").innerHTML = t;
+    })
+    .catch(() => {
+      document.getElementById("content").textContent =
+        "Error loading index.";
+    });
+</script>
 </body>
 </html>
