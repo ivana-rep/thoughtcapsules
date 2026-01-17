@@ -89,7 +89,6 @@
     <pre id="content">Loading…</pre>
 
     <script>
-      // Theme selection
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
@@ -140,13 +139,10 @@
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;");
 
-            // Markdown links
-            const mdLink = /\[([^\]]+)\]\(([^)]+)\)/g;
-            html = html.replace(mdLink, (_, label, url) =>
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) =>
               `<a href="${url}">${label}</a>`
             );
 
-            // Marker highlight
             html = html.replace(/!!([^!]+)!!/g, "<mark>$1</mark>");
 
             out.innerHTML = html;
