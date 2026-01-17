@@ -78,10 +78,12 @@
          Same geometry, 1px line
          ========================= */
       [data-theme="dark"] mark {
-        background-image: linear-gradient(var(--mark-dark), var(--mark-dark));
-        background-size: 100% 1px;
-        background-repeat: no-repeat;
-        background-position: 0 var(--mark-cutoff);
+        background: none !important;
+        padding: 0;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.15em;
+        text-decoration-color: var(--mark-dark);
       }
     </style>
   </head>
