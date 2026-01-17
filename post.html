@@ -12,8 +12,6 @@
         --fg: #111111;
         --link: #005bff;
 
-        /* highlight geometry */
-        --mark-cutoff: 62%;
         --mark-light: rgba(255, 241, 118, 0.95);
         --mark-dark: rgba(255, 235, 59, 0.9);
       }
@@ -59,29 +57,27 @@
       }
 
       /* =========================
-         LIGHT MODE (FROZEN)
-         Marker behind text
+         LIGHT MODE — MARKER
          ========================= */
       mark {
         background: none;
         color: inherit;
         padding: 0 2px;
         background-image: linear-gradient(
-          transparent var(--mark-cutoff),
-          var(--mark-light) var(--mark-cutoff)
+          transparent 62%,
+          var(--mark-light) 62%
         );
         background-repeat: no-repeat;
       }
 
       /* =========================
-         DARK MODE
-         Same geometry, 1px line
+         DARK MODE — UNDERLINE
          ========================= */
       [data-theme="dark"] mark {
         background: none !important;
         padding: 0;
         text-decoration: underline;
-        text-decoration-thickness: 1px;
+        text-decoration-thickness: 2px;
         text-underline-offset: 0.15em;
         text-decoration-color: var(--mark-dark);
       }
@@ -96,12 +92,18 @@
       (function () {
         const KEY = "tc-theme";
         const root = document.documentElement;
+
         let theme = null;
         try {
-          const saved = localStorage.getItem(KEY);
-          if (saved === "dark" || saved === "light") theme = saved;
+          theme = localStorage.getItem(KEY);
         } catch (_) {}
-        if (!theme) theme = "dark";
+
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
         root.setAttribute("data-theme", theme);
       }());
 
@@ -142,9 +144,9 @@
               .replace(/>/g, "&gt;");
 
             // Markdown links
-            const mdLink = /\[([^\]]+)\]\(([^)]+)\)/g;
-            html = html.replace(mdLink, (_, label, url) =>
-              `<a href="${url}">${label}</a>`
+            html = html.replace(
+              /\[([^\]]+)\]\(([^)]+)\)/g,
+              (_, label, url) => `<a href="${url}">${label}</a>`
             );
 
             // Highlight syntax
