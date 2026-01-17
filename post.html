@@ -63,7 +63,7 @@
         white-space: pre-wrap;
       }
 
-      /* LIGHT MODE: marker behind text */
+      /* LIGHT MODE: marker behind text (DO NOT TOUCH) */
       mark {
         background: none;
         color: inherit;
@@ -74,12 +74,12 @@
         );
       }
 
-      /* DARK MODE: subtle underline, no fill */
+      /* DARK MODE: thin underline accent */
       @media (prefers-color-scheme: dark) {
         mark {
           background-image: none;
           padding: 0;
-          box-shadow: inset 0 -0.35em 0 -0.2em var(--mark-dark-line);
+          box-shadow: inset 0 -0.18em 0 0 var(--mark-dark-line);
         }
       }
     </style>
@@ -146,7 +146,7 @@
               `<a href="${url}">${label}</a>`
             );
 
-            // Highlight
+            // Highlight syntax
             html = html.replace(/!!([^!]+)!!/g, "<mark>$1</mark>");
 
             out.innerHTML = html;
