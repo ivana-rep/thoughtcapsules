@@ -44,7 +44,6 @@
       word-wrap: break-word;
     }
 
-    /* light mode highlight */
     mark {
       background: none;
       padding: 0 2px;
@@ -55,7 +54,6 @@
       );
     }
 
-    /* dark mode highlight */
     html[data-theme="dark"] mark {
       background: none;
       padding: 0;
@@ -72,7 +70,6 @@
 
 <pre id="content">Loading…</pre>
 
-<!-- theme sync -->
 <script>
 (function () {
   const root = document.documentElement;
@@ -87,7 +84,6 @@
 })();
 </script>
 
-<!-- loader + parser -->
 <script>
 (function () {
   const content = document.getElementById("content");
@@ -110,33 +106,36 @@
     })
     .then(t => {
       let html = t
-        // escape HTML
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-
-        // highlights
         .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
-
-        // links
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
 
-          // 1) absolute URLs → leave untouched
+          // 1) absolute URLs
           if (/^https?:\/\//.test(link)) {
             return `<a href="${link}">${text}</a>`;
           }
 
-          // 2) post.html?p=...
+          // 2) HTML pages (index.html, yearly-archives.html, /2026/....html)
+          if (/\.html($|[?#])/.test(link)) {
+            const href = link.startsWith("/")
+              ? link
+              : BASE + link.replace(/^\/+/, "");
+            return `<a href="${href}">${text}</a>`;
+          }
+
+          // 3) post.html?p=...
           if (link.startsWith("post.html?")) {
             return `<a href="${BASE}${link}">${text}</a>`;
           }
 
-          // 3) post.html#...
+          // 4) post.html#...
           if (link.startsWith("post.html#")) {
             return `<a href="${BASE}${link}">${text}</a>`;
           }
 
-          // 4) bare path → convert
+          // 5) bare txt path
           return `<a href="${BASE}post.html?p=${link.replace(/^\/+/, "")}">${text}</a>`;
         });
 
