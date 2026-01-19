@@ -1,5 +1,5 @@
 2026_01_01 | Negative
-↳ [back to full archive](2026_full-archive.html
+↳ [back to full archive](2026/2026_full-archive.html)
 ↳ [back to index](index.html)
 
 Examples don’t have to be good to be useful.
