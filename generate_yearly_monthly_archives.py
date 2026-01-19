@@ -1,17 +1,11 @@
-import os
-from datetime import datetime
-from collections import defaultdict
+#!/usr/bin/env python3
+from pathlib import Path
 
-# =========================
-# CONFIG — YOU EDIT THIS
-# =========================
-YEAR = 2026
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-YEAR_DIR = os.path.join(BASE_DIR, str(YEAR))
+YEAR = 2027  # CHANGE THIS MANUALLY
 
-# =========================
-# HTML TEMPLATES (FROZEN)
-# =========================
+ROOT = Path(".")
+YEAR_DIR = ROOT / str(YEAR)
+YEAR_DIR.mkdir(exist_ok=True)
 
 HTML_HEAD = """<!doctype html>
 <html lang="en">
@@ -27,7 +21,6 @@ HTML_HEAD = """<!doctype html>
         --bg: #ffffff;
         --fg: #111111;
         --link: #005bff;
-
         --mark-light: rgba(255, 241, 118, 0.9);
         --mark-dark: rgba(255, 235, 59, 0.9);
       }}
@@ -65,7 +58,6 @@ HTML_HEAD = """<!doctype html>
         word-wrap: break-word;
       }}
 
-      /* LIGHT MODE — marker behind text (EXACTLY like index.html) */
       mark {{
         background: none;
         color: inherit;
@@ -76,7 +68,6 @@ HTML_HEAD = """<!doctype html>
         );
       }}
 
-      /* DARK MODE — underline (EXACTLY like index.html) */
       @media (prefers-color-scheme: dark) {{
         mark {{
           background: none;
@@ -90,104 +81,41 @@ HTML_HEAD = """<!doctype html>
       }}
     </style>
   </head>
-
   <body>
 <pre>
 """
 
-HTML_FOOT = """</pre>
+HTML_FOOT = """
+</pre>
   </body>
 </html>
 """
 
-# =========================
-# HELPERS
-# =========================
+def write_file(path: Path, content: str):
+    path.write_text(content, encoding="utf-8")
 
-def read_title(txt_path):
-    with open(txt_path, "r", encoding="utf-8") as f:
-        first = f.readline().strip()
-    if "|" in first:
-        return first.split("|", 1)[1].strip()
-    return first
-
-
-# =========================
-# COLLECT NOTES
-# =========================
-
-notes_by_month = defaultdict(list)
-
-for file in os.listdir(YEAR_DIR):
-    if not file.endswith(".txt"):
-        continue
-
-    try:
-        date = datetime.strptime(file[:8], "%Y%m%d")
-    except ValueError:
-        continue
-
-    title = read_title(os.path.join(YEAR_DIR, file))
-    notes_by_month[date.month].append((date, file, title))
-
-# sort newest → oldest
-for month in notes_by_month:
-    notes_by_month[month].sort(reverse=True)
-
-# =========================
-# YEARLY ARCHIVE
-# =========================
-
-year_lines = []
-year_lines.append(f"<mark>/{YEAR}/Full Archive</mark>")
-year_lines.append("↳ <a href=\"../index.html\">back to index</a>\n")
-
-for month in sorted(notes_by_month.keys(), reverse=True):
-    for date, file, title in notes_by_month[month]:
-        year_lines.append(
-            f"↳ {date.strftime('%Y-%m-%d')} "
-            f"<a href=\"../post.html?p={YEAR}/{file}\">{title}</a>"
-        )
-    year_lines.append("")  # blank line between months
-
-year_html = (
+# YEARLY ARCHIVE (EMPTY)
+yearly_content = (
     HTML_HEAD.format(title=f"/{YEAR}/Full Archive")
-    + "\n".join(year_lines).rstrip()
-    + "\n"
+    + f"<mark>/{YEAR}/Full Archive</mark>\n"
+    + f"↳ <a href=\"../index.html\">back to index</a>\n\n"
     + HTML_FOOT
 )
 
-with open(os.path.join(YEAR_DIR, f"{YEAR}_full-archive.html"), "w", encoding="utf-8") as f:
-    f.write(year_html)
+write_file(YEAR_DIR / f"{YEAR}_full-archive.html", yearly_content)
 
-# =========================
-# MONTHLY ARCHIVES
-# =========================
-
+# MONTHLY ARCHIVES (EMPTY)
 for month in range(1, 13):
-    lines = []
-    lines.append(f"<mark>/{YEAR}/{month:02d}/Archive</mark>")
-    lines.append(f"↳ <a href=\"{YEAR}_full-archive.html\">back to full archive</a>")
-    lines.append("↳ <a href=\"../index.html\">back to index</a>\n")
+    mm = f"{month:02d}"
 
-    for date, file, title in notes_by_month.get(month, []):
-        lines.append(
-            f"↳ {date.strftime('%Y-%m-%d')} "
-            f"<a href=\"../post.html?p={YEAR}/{file}\">{title}</a>"
-        )
-
-    html = (
-        HTML_HEAD.format(title=f"/{YEAR}/{month:02d}/Archive")
-        + "\n".join(lines)
-        + "\n"
+    monthly_content = (
+        HTML_HEAD.format(title=f"/{YEAR}/{mm}/Archive")
+        + f"<mark>/{YEAR}/{mm}/Archive</mark>\n"
+        + f"↳ <a href=\"{YEAR}_full-archive.html\">back to full archive</a>\n"
+        + f"↳ <a href=\"../index.html\">back to index</a>\n\n"
         + HTML_FOOT
     )
 
-    with open(
-        os.path.join(YEAR_DIR, f"{YEAR}{month:02d}_archive.html"),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        f.write(html)
+    write_file(YEAR_DIR / f"{YEAR}{mm}_archive.html", monthly_content)
 
-print(f"✓ Archives regenerated for {YEAR}")
+print(f"Archives for {YEAR} generated (EMPTY, ready for update_daily_note.py).")
