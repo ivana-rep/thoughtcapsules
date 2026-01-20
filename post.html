@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/jpeg" href="/thoughtcapsules/tcfavicon.jpg">
-  
+
   <style>
     :root {
       --bg: #ffffff;
@@ -14,25 +14,31 @@
       --link: #005bff;
       --mark-light: rgba(255, 241, 118, 0.9);
       --mark-dark: rgba(255, 235, 59, 0.9);
+      --quote-fg: #555;
     }
 
-    html[data-theme="dark"] {
-      --bg: #000000;
-      --fg: #ffffff;
-      --link: #8fc9ed;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --fg: #ffffff;
+        --link: #8fc9ed;
+        --quote-fg: #bbb;
+      }
     }
+
+    html, body { height: 100%; }
 
     body {
       margin: 0;
       padding: 16px;
       background: var(--bg);
       color: var(--fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       line-height: 1.35;
       -webkit-font-smoothing: antialiased;
     }
 
-    a {
+    a, a:visited {
       color: var(--link);
       text-decoration: none;
     }
@@ -47,30 +53,27 @@
 
     mark {
       background: none;
-      padding: 0 2px;
       color: inherit;
+      padding: 0 2px;
       background-image: linear-gradient(
         transparent 62%,
         var(--mark-light) 62%
       );
     }
 
-    html[data-theme="dark"] mark {
-      background: none;
-      padding: 0;
-      color: var(--fg);
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 0.15em;
-      text-decoration-color: var(--mark-dark);
+    @media (prefers-color-scheme: dark) {
+      mark {
+        background: none;
+        padding: 0;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.15em;
+        text-decoration-color: var(--mark-dark);
+      }
     }
 
-    /* blockquote-style lines rendered from \ in txt */
-    .quote-line {
-      display: block;
-      padding-left: 1.5em;
-      text-indent: -1.5em;
-      opacity: 0.9;
+    .quote {
+      color: var(--quote-fg);
     }
   </style>
 </head>
@@ -81,77 +84,64 @@
 
 <script>
 (function () {
-  const root = document.documentElement;
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-
-  function apply(isDark) {
-    root.setAttribute("data-theme", isDark ? "dark" : "light");
-  }
-
-  apply(mq.matches);
-  mq.addEventListener("change", e => apply(e.matches));
-})();
-</script>
-
-<script>
-(function () {
   const content = document.getElementById("content");
-
-  const params = new URLSearchParams(location.search);
-  const file = params.get("p") || (location.hash ? location.hash.slice(1) : null);
+  const params = new URLSearchParams(window.location.search);
+  const file = params.get("p");
 
   if (!file) {
     content.textContent = "Missing file parameter.";
     return;
   }
 
-  const BASE = "/thoughtcapsules/";
-  const url = BASE + file.replace(/^\/+/, "");
-
-  fetch(url)
+  fetch(file)
     .then(r => {
       if (!r.ok) throw new Error();
       return r.text();
     })
-    .then(t => {
-      let html = t
-        // escape first
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
+    .then(text => {
+      const lines = text.split("\n"); // DO NOT trim
+      const out = [];
+
+      for (let line of lines) {
+
+        // blockquote: \ text
+        if (line.startsWith("\\ ")) {
+          out.push(
+            `<span class="quote">|- ${escapeHTML(line.slice(2))}</span>`
+          );
+          continue;
+        }
 
         // highlights
-        .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
-
-        // blockquote lines: \ text  →  |- text
-        .replace(/^\s*\\\s*(.+)$/gm, '<span class="quote-line">|- $1</span>')
+        let processed = escapeHTML(line)
+          .replace(/!!(.*?)!!/g, "<mark>$1</mark>");
 
         // links
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
-
-          if (/^https?:\/\//.test(link)) {
+        processed = processed.replace(
+          /\[([^\]]+)\]\(([^)]+)\)/g,
+          (m, text, link) => {
+            if (/^https?:\/\//.test(link)) {
+              return `<a href="${link}">${text}</a>`;
+            }
             return `<a href="${link}">${text}</a>`;
           }
+        );
 
-          if (/\.html($|[?#])/.test(link)) {
-            const href = link.startsWith("/")
-              ? link
-              : BASE + link.replace(/^\/+/, "");
-            return `<a href="${href}">${text}</a>`;
-          }
+        out.push(processed);
+      }
 
-          if (link.startsWith("post.html?") || link.startsWith("post.html#")) {
-            return `<a href="${BASE}${link}">${text}</a>`;
-          }
-
-          return `<a href="${BASE}post.html?p=${link.replace(/^\/+/, "")}">${text}</a>`;
-        });
-
-      content.innerHTML = html;
+      content.innerHTML = out.join("\n"); // PRESERVE EMPTY LINES
     })
     .catch(() => {
       content.textContent = "Error loading file.";
     });
+
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 })();
 </script>
 
