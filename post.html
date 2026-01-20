@@ -64,6 +64,14 @@
       text-underline-offset: 0.15em;
       text-decoration-color: var(--mark-dark);
     }
+
+    /* blockquote-style lines rendered from \ in txt */
+    .quote-line {
+      display: block;
+      padding-left: 1.5em;
+      text-indent: -1.5em;
+      opacity: 0.9;
+    }
   </style>
 </head>
 
@@ -107,18 +115,24 @@
     })
     .then(t => {
       let html = t
+        // escape first
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
+
+        // highlights
         .replace(/!!(.+?)!!/g, "<mark>$1</mark>")
+
+        // blockquote lines: \ text  →  |- text
+        .replace(/^\s*\\\s*(.+)$/gm, '<span class="quote-line">|- $1</span>')
+
+        // links
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, link) => {
 
-          // 1) absolute URLs
           if (/^https?:\/\//.test(link)) {
             return `<a href="${link}">${text}</a>`;
           }
 
-          // 2) HTML pages (index.html, yearly-archives.html, /2026/....html)
           if (/\.html($|[?#])/.test(link)) {
             const href = link.startsWith("/")
               ? link
@@ -126,17 +140,10 @@
             return `<a href="${href}">${text}</a>`;
           }
 
-          // 3) post.html?p=...
-          if (link.startsWith("post.html?")) {
+          if (link.startsWith("post.html?") || link.startsWith("post.html#")) {
             return `<a href="${BASE}${link}">${text}</a>`;
           }
 
-          // 4) post.html#...
-          if (link.startsWith("post.html#")) {
-            return `<a href="${BASE}${link}">${text}</a>`;
-          }
-
-          // 5) bare txt path
           return `<a href="${BASE}post.html?p=${link.replace(/^\/+/, "")}">${text}</a>`;
         });
 
