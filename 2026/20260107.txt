@@ -8,5 +8,5 @@ Knowing you’ve thought it through already changes the weight of things.
 Identify the real problem, it's usually the one you keep avoiding.
 Write a plan.
 Seeing it laid out is already a first step forward.
-A plan reduces [decisions](post.html#2026/20260110.txt).
-What looks [obvious](post.html#2026/20260108.txt) is often what keeps it alive over time.
+A plan reduces [decisions](post.html?p=2026/20260110.txt).
+What looks [obvious](post.html?p=2026/20260108.txt) is often what keeps it alive over time.
