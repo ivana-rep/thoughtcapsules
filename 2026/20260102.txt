@@ -3,9 +3,9 @@
 ↳ [back to index](index.html)
 
 Obsession is usually framed as a flaw, something unhealthy, something to fix.
-But for some people, [obsession is how work gets done](post.html#2026/20260116.txt).
+But for some people, [obsession is how work gets done](post.html?p=2026/20260116.txt).
 Structure, routines, relentless focus on objectives.
 Maybe the problem isn’t obsession itself, but leaving it unmanaged.
 I want to learn how to turn obsession into a tool, not a liability.
-At first, obsession feels like [relief](post.html#2026/20260111.txt).
+At first, obsession feels like [relief](post.html?p=2026/20260111.txt).
 The damage only appears once it becomes automatic.
