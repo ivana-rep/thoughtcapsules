@@ -9,3 +9,7 @@ The problem with data, with overtracking, is that data never describes reality o
 Data must be interpreted.  
 Data can tell whatever story you want.  
 Data can guide you, but only if you don’t use it against yourself, or to sugarcoat a bad reality.
+
+\ The first principle is that you must not fool yourself 
+\ and you are the easiest person to fool.
+\ Richard Feynman
