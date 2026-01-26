@@ -5,14 +5,18 @@ import re
 # ---------- CONFIG ----------
 YEAR = "2026"
 INDEX_FILE = Path("index.html")
-FULL_ARCHIVE = Path("2026/2026_full-archive.html")
+FULL_ARCHIVE = Path(f"{YEAR}/{YEAR}_full-archive.html")
 # ----------------------------
 
-def fail(msg):
+def fail(msg: str):
     print(f"ERROR: {msg}")
     sys.exit(1)
 
-def extract_title(txt_path):
+def extract_title(txt_path: Path):
+    """
+    Expects first non-empty line like:
+    YYYY_MM_DD | Title
+    """
     for line in txt_path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line:
@@ -22,23 +26,43 @@ def extract_title(txt_path):
             return m.groups()
     fail("No title line found")
 
-def make_entry(y, m, d, title, prefix):
+def make_entry(y: str, m: str, d: str, title: str, prefix: str):
+    """
+    prefix:
+      - ""   for root files (index.html) -> href="post.html?p=2026/20260131.txt"
+      - "../" for files inside /YEAR      -> href="../post.html?p=2026/20260131.txt"
+    """
     return (
-        f'↳ {y}-{m}-{d} '
-        f'<a href="{prefix}post.html?p=2026/{y}{m}{d}.txt">{title}</a>'
+        f"↳ {y}-{m}-{d} "
+        f'<a href="{prefix}post.html?p={YEAR}/{y}{m}{d}.txt">{title}</a>'
     )
 
-def insert_after_anchor(path, entry):
+def insert_entry(path: Path, entry: str):
     lines = path.read_text(encoding="utf-8").splitlines()
 
-    if any(entry in line for line in lines):
+    if any(entry == line for line in lines):
         fail(f"Entry already exists in {path}")
 
-    for i in range(len(lines) - 1):
-        # Insert after a blank line, before the first date entry
-        if lines[i].strip() == "" and lines[i + 1].startswith("↳ 20"):
-            lines.insert(i + 1, entry)
-            path.write_text("\n".join(lines), encoding="utf-8")
+    # 1) Normal case: insert before the first date line (keeps newest-first order)
+    for i, line in enumerate(lines):
+        if line.startswith("↳ 20"):
+            # Ensure a blank line before the list if needed
+            if i > 0 and lines[i - 1].strip() != "":
+                lines.insert(i, "")
+                i += 1
+            lines.insert(i, entry)
+            path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            return
+
+    # 2) Empty monthly archive case: insert before </pre>
+    for i, line in enumerate(lines):
+        if line.strip().lower() == "</pre>":
+            # Keep one blank line between header links and entries
+            if i > 0 and lines[i - 1].strip() != "":
+                lines.insert(i, "")
+                i += 1
+            lines.insert(i, entry)
+            path.write_text("\n".join(lines) + "\n", encoding="utf-8")
             return
 
     fail(f"Could not find insertion point in {path}")
@@ -51,7 +75,7 @@ def main():
     if not re.fullmatch(r"\d{8}", ymd):
         fail("Date must be YYYYMMDD")
 
-    txt_path = Path(f"2026/{ymd}.txt")
+    txt_path = Path(f"{YEAR}/{ymd}.txt")
     if not txt_path.exists():
         fail(f"{txt_path} not found")
 
@@ -60,14 +84,13 @@ def main():
     index_entry = make_entry(y, m, d, title, "")
     archive_entry = make_entry(y, m, d, title, "../")
 
-    month_archive = Path(f"2026/{y}{m}_archive.html")
-
+    month_archive = Path(f"{YEAR}/{y}{m}_archive.html")
     if not month_archive.exists():
         fail(f"{month_archive} not found")
 
-    insert_after_anchor(INDEX_FILE, index_entry)
-    insert_after_anchor(FULL_ARCHIVE, archive_entry)
-    insert_after_anchor(month_archive, archive_entry)
+    insert_entry(INDEX_FILE, index_entry)
+    insert_entry(FULL_ARCHIVE, archive_entry)
+    insert_entry(month_archive, archive_entry)
 
     print("Daily note updated successfully.")
 
