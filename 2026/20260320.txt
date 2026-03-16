@@ -1,0 +1,12 @@
+2026_03_20 | Smuggled in
+↳ [back to full archive](2026/2026_full-archive.html)
+↳ [back to index](index.html)
+
+Hume's argument: a belief alone can never motivate you. You also need a desire.
+For factual beliefs, this seems obvious. Knowing the train leaves at six doesn't tell you what to do — you need to want to catch it. Moral philosophy built on this: "lying is wrong" only motivates you because you already want not to hurt people. Without the desire, the belief sits there, inert.
+A group of philosophers tried to save some desires from this by making them rational: a desire counts if it's formed with full information, foresight, coherence, careful deliberation.
+The problem: each condition is already a value judgment.
+"Be farsighted" means farsightedness is worth having. "Be coherent" means coherence matters.
+To list what makes a desire rational, you must [already know what rationality is worth](post.html?p=2026/20260316.txt).
+!!You can't derive what matters from facts that don't matter yet!!.
+Every attempt to build morality from neutral ground already stands on moral ground.
