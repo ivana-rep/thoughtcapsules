@@ -75,6 +75,16 @@
     .quote {
       color: var(--quote-fg);
     }
+
+    .counter {
+      color: #aaa;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .counter {
+        color: #555;
+      }
+    }
   </style>
 </head>
 
@@ -125,6 +135,12 @@
             }
             return `<a href="${link}">${text}</a>`;
           }
+        );
+
+        // day counter [N/365]
+        processed = processed.replace(
+          /\[(\d+\/\d+)\]/g,
+          '<span class="counter">[$1]</span>'
         );
 
         out.push(processed);
