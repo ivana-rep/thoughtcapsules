@@ -9,3 +9,5 @@ Pair habits with cues, not just times.
 Automate where possible, to reduce room for derailment.
 Remove friction for the same reason.
 Make the choice easy.
+
+[38/365]
