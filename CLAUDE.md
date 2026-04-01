@@ -19,12 +19,19 @@ YYYY_MM_DD | Title
 ↳ [back to index](index.html)
 
 Content here.
+
+[N/365]
+
+< [prev](post.html?p=YYYY/YYYYMMDD.txt) | [next](post.html?p=YYYY/YYYYMMDD.txt) >
 ```
 - First line is always `YYYY_MM_DD | Title` — this is what the indexing scripts read
 - Nav lines are always the two lines shown above, immediately after the title
 - `!!text!!` → highlight (use at most once per note, for the single key idea)
 - `\ text` → blockquote line (each line of a quote gets its own `\ `)
 - `[text](post.html?p=YYYY/YYYYMMDD.txt)` → internal link to another note
+- Last lines: blank line + `[N/365]` + blank line + `< [prev](...) | [next](...) >`
+  - prev/next link to the calendar-adjacent days (files in YYYY/ dirs)
+  - If no adjacent file exists, use plain text: `prev` or `next`
 
 ## Writing style (for editing raw text in step 2)
 - Short entries: one sentence to a small paragraph. No padding.
@@ -80,6 +87,8 @@ Write the final `YYYY/YYYYMMDD.txt` with:
 - Nav lines (two lines, exact format above)
 - Blank line
 - Final edited content
+- Blank line + `[N/365]` (day-of-year counter)
+- Blank line + `< [prev](post.html?p=...) | [next](post.html?p=...) >` (prev/next links)
 
 Then move to the next note.
 

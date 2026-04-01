@@ -13,3 +13,5 @@ This state isn’t for action. It’s for recovery.
 Skipping it only sends the mind back to autopilot.
 
 [6/365]
+
+< [prev](post.html?p=2026/20260105.txt) | [next](post.html?p=2026/20260107.txt) >
