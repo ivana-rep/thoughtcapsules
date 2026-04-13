@@ -2,7 +2,7 @@
 
 ## Project structure
 ```
-index.html                      ← homepage: nav + current-month entries (newest-first)
+index.html                      ← homepage: full year index with month anchors (newest-first)
 post.html                       ← single-post viewer (loads .txt via ?p= param)
 yearly-archives.html            ← links to each year's archives
 about.txt
@@ -49,10 +49,10 @@ Content here.
 - In `index.html`: `↳ YYYY-MM-DD <a href="post.html?p=YYYY/YYYYMMDD.txt">Title</a>`
 - In archive files: `↳ YYYY-MM-DD <a href="../post.html?p=YYYY/YYYYMMDD.txt">Title</a>`
 
-## Insertion rule (all three HTML files)
-Insert before the first line starting with `↳ 20`.
-If no such line exists yet (empty section), insert before `</pre>`, with one blank line above the new entry.
-In `YYYY_full-archive.html`, add a blank line between months (between the last entry of one month and the first of the next).
+## Insertion rule (all HTML files)
+Insert before the first line starting with `↳ 20` in the relevant section.
+If no such line exists yet (empty section), insert after the invisible anchor `<span id="MM"></span>`, with one blank line above the new entry.
+In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
 
 ---
 
@@ -106,9 +106,8 @@ For full archive and monthly archive, process all dates oldest-to-newest:
 **Daily index update (separate step, done on the day of publication)**
 On the day a note goes live:
   a. **New month detection**: if this is the first note of a new month:
-     - Remove all old month's `↳ YYYY-{old_MM}-` lines from the Current Month section
-     - Check if the nav `<mark>` already points to the new month — move it if not
-  b. Insert the day's entry into `index.html`
+     - Move the `<mark>` in the nav from `<a href="#MM"><mark>old</mark></a>` to the new month number
+  b. Insert the day's entry into `index.html` before the first `↳ 20` line inside the correct month's section (identified by `<span id="MM"></span>`)
   c. Commit and push `index.html` alone.
 
 **Step 7 — Review and push**
