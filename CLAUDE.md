@@ -107,6 +107,8 @@ For full archive and monthly archive, process all dates oldest-to-newest:
 On the day a note goes live:
   a. **New month detection**: if this is the first note of a new month:
      - Move the `<mark>` in the nav from `<a href="#MM"><mark>old</mark></a>` to the new month number
+     - Add `<a href="#" class="top-link">[↳ top]</a>` to the now-previous month's anchor line: `<span id="old"></span><a href="#" class="top-link">[↳ top]</a>`
+     - The current month never has a `[↳ top]` — it is added only when the month closes
   b. Insert the day's entry into `index.html` before the first `↳ 20` line inside the correct month's section (identified by `<span id="MM"></span>`)
   c. Commit and push `index.html` alone.
 
