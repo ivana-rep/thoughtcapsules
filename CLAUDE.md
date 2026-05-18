@@ -33,7 +33,7 @@ Content here.
   - prev/next link to the calendar-adjacent days (files in YYYY/ dirs)
   - If no adjacent file exists, use plain text: `prev` or `next`
 
-## Writing style (for editing raw text in step 2)
+## Writing style
 - Short entries: one sentence to a small paragraph. No padding.
 - Every sentence earns its place. Cut anything that repeats or dilutes.
 - Short, punchy sentences. Fragments are fine.
@@ -59,60 +59,49 @@ In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
 ## PROCESS 1 — Register note(s)
 
 ### Start of session
-Ask: "Which date range are we working on?"
-Work through notes one at a time, oldest to newest.
+User specifies the date range. Read all candidate entries from `==writing-notes.md` in Obsidian.
 
-### For each note (steps 1–5)
+### Step 1 — Present all drafts at once
+For all notes in the range, present complete `.txt` files in final publication format in a single message:
+- Edited content (see Writing style)
+- Title: short, concrete, a handle for the idea
+- Internal links embedded in the content
+- Day-of-year counter `[N/365]`
+- Nav prev/next links
 
-**Step 1 — Raw text**
-User provides the raw text.
+Internal links: scan existing `.txt` files, embed the best genuine connections directly in the draft. Do not force links. Present all drafts together — no per-note approval steps.
 
-**Step 2 — Edit**
-Edit for clarity and style consistency (see Writing style above).
-Present the edited version for review. Do not proceed until approved.
+Wait for approval or corrections before writing.
 
-**Step 3 — Internal links**
-Scan every `.txt` file across all years.
-Identify notes whose topic genuinely connects to this one.
-Propose specific link placements (word or phrase + target file) for approval.
-Do not force links. If none are relevant, say so.
+### Step 2 — Write files
+After approval, write all `YYYY/YYYYMMDD.txt` files.
+Format:
+```
+YYYY_MM_DD | Title
+↳ [back to full archive](YYYY/YYYY_full-archive.html)
+↳ [back to index](index.html)
 
-**Step 4 — Title**
-Propose a title: short, concrete, not a summary — a handle for the idea.
-Wait for approval or correction.
+Content.
 
-**Step 5 — Write file**
-Write the final `YYYY/YYYYMMDD.txt` with:
-- Header line: `YYYY_MM_DD | Approved title`
-- Nav lines (two lines, exact format above)
-- Blank line
-- Final edited content
-- Blank line + `[N/365]` (day-of-year counter)
-- Blank line + `< [prev](post.html?p=...) | [next](post.html?p=...) >` (prev/next links)
+[N/365]
 
-Then move to the next note.
+< [prev](post.html?p=...) | [next](post.html?p=...) >
+```
 
-### After all notes are written (steps 6–7)
+### Step 3 — Update HTML indexes
+Update all at once:
+  a. `YYYY/YYYY_full-archive.html` — insert all entries (blank line between months)
+  b. `YYYY/YYYYmm_archive.html` — insert all entries
+  c. `topics/*.html` — insert into every relevant theme page (NEVER skip)
+  d. `index.html` — insert all entries (update immediately unless user says otherwise)
 
-**Step 6 — Update HTML indexes**
-Notes are written ahead of time but published day by day.
-- `YYYY_full-archive.html` and `YYYYmm_archive.html`: update immediately when notes are written.
-- `index.html`: do NOT update here. It is updated separately each day as notes go live (see Daily index update below).
+**New month detection (for index.html)**
+If adding the first entry of a new month:
+  - Move the `<mark>` in the nav to the new month number
+  - Add `<a href="#" class="top-link">[↳ top]</a>` to the now-closed month's anchor line
+  - The current month never has `[↳ top]`
 
-For full archive and monthly archive, process all dates oldest-to-newest:
-  a. Insert entry into `YYYY/YYYY_full-archive.html` (add blank line between months)
-  b. Insert entry into `YYYY/YYYYmm_archive.html`
-
-**Daily index update (separate step, done on the day of publication)**
-On the day a note goes live:
-  a. **New month detection**: if this is the first note of a new month:
-     - Move the `<mark>` in the nav from `<a href="#MM"><mark>old</mark></a>` to the new month number
-     - Add `<a href="#" class="top-link">[↳ top]</a>` to the now-previous month's anchor line: `<span id="old"></span><a href="#" class="top-link">[↳ top]</a>`
-     - The current month never has a `[↳ top]` — it is added only when the month closes
-  b. Insert the day's entry into `index.html` before the first `↳ 20` line inside the correct month's section (identified by `<span id="MM"></span>`)
-  c. Commit and push `index.html` alone.
-
-**Step 7 — Review and push**
-User reviews all changed files.
-Then: `git add` relevant files, commit, `git push`.
-Commit message: `update daily notes YYYYMMDD` or `update daily notes YYYYMMDD-YYYYMMDD` for a range.
+### Step 4 — Mark sources and push
+  a. Mark used entries in `==writing-notes.md` as `- [x]`
+  b. `git add` relevant files, commit, `git push`
+  Commit message: `update daily notes YYYYMMDD` or `update daily notes YYYYMMDD-YYYYMMDD`
