@@ -99,12 +99,30 @@
         color: #999;
       }
     }
+
+    #search-input {
+      font: inherit;
+      font-size: inherit;
+      color: var(--fg);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--link);
+      outline: none;
+      width: 200px;
+    }
+
+    #search-input::placeholder {
+      color: #767676;
+    }
     </style>
   </head>
 
   <body>
 <pre>
 ↳ <mark>thinking capsules</mark> | <a href="post.html?p=about.txt">about</a> | <a href="yearly-archives.html">yearly archives</a> | <a href="topics.html">topics</a>
+
+↳ search: <input type="text" id="search-input" placeholder="keyword" autocomplete="off" spellcheck="false"> <span class="counter" id="search-status"></span> <span class="counter" id="search-clear" style="display:none">// <a href="#" id="search-clear-link">clear results</a></span>
+<span id="search-results"></span>
 
 <a href="2026/2026_full-archive.html">/2026</a>
 <a href="#01">01</a> | <a href="#02">02</a> | <a href="#03">03</a> | <a href="#04">04</a> | <a href="#05">05</a> | <a href="#06">06</a> | <a href="#07">07</a> | <a href="#08"><mark>08</mark></a> | <a href="#09">09</a> | <a href="#10">10</a> | <a href="#11">11</a> | <a href="#12">12</a>
@@ -352,5 +370,145 @@
 <span id="12"></span>
 
 </pre>
+
+<script>
+(function () {
+  const input = document.getElementById("search-input");
+  const status = document.getElementById("search-status");
+  const results = document.getElementById("search-results");
+  const clearWrap = document.getElementById("search-clear");
+  const clearLink = document.getElementById("search-clear-link");
+
+  let indexPromise = null;
+  let timer = null;
+
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // discovers years from yearly-archives.html (no hardcoded year list —
+  // a new year is picked up automatically as soon as it's linked there)
+  function discoverYears() {
+    return fetch("yearly-archives.html")
+      .then(r => r.text())
+      .then(html => {
+        const years = new Set();
+        const yearRe = /<a href="(\d{4})\/\1_full-archive\.html">/g;
+        let m;
+        while ((m = yearRe.exec(html))) years.add(m[1]);
+        return [...years];
+      })
+      .catch(() => []);
+  }
+
+  function buildIndex() {
+    if (indexPromise) return indexPromise;
+
+    indexPromise = discoverYears()
+      .then(years =>
+        Promise.all(
+          years.map(year =>
+            fetch(`${year}/${year}_full-archive.html`)
+              .then(r => r.text())
+              .catch(() => "")
+          )
+        )
+      )
+      .then(pages => {
+        const found = new Map();
+        const linkRe = /<a href="(?:\.\.\/)?post\.html\?p=(\d{4}\/\d{8}\.txt)">([^<]*)<\/a>/g;
+
+        for (const html of pages) {
+          let m;
+          while ((m = linkRe.exec(html))) {
+            if (!found.has(m[1])) found.set(m[1], m[2]);
+          }
+        }
+
+        return Promise.all(
+          [...found.entries()].map(([path, title]) =>
+            fetch(path)
+              .then(r => r.text())
+              .then(text => ({ path, title, text }))
+              .catch(() => null)
+          )
+        ).then(entries => entries.filter(Boolean));
+      });
+
+    return indexPromise;
+  }
+
+  function snippet(text, query) {
+    const at = text.toLowerCase().indexOf(query.toLowerCase());
+    if (at === -1) return "";
+
+    const start = Math.max(0, at - 40);
+    const end = Math.min(text.length, at + query.length + 40);
+    const excerpt = escapeHTML(text.slice(start, end).replace(/\s+/g, " ").trim());
+    const highlighted = excerpt.replace(
+      new RegExp(escapeRegExp(escapeHTML(query)), "ig"),
+      m => `<mark>${m}</mark>`
+    );
+
+    return (start > 0 ? "…" : "") + highlighted + (end < text.length ? "…" : "");
+  }
+
+  function search(query) {
+    buildIndex().then(entries => {
+      const q = query.toLowerCase();
+      const matches = entries.filter(e => e.text.toLowerCase().includes(q));
+
+      if (matches.length === 0) {
+        status.textContent = "no results";
+        results.innerHTML = "";
+        return;
+      }
+
+      status.textContent = matches.length + " result" + (matches.length === 1 ? "" : "s");
+
+      results.innerHTML = matches
+        .map(e => {
+          const line1 = `↳ <a href="post.html?p=${e.path}">${escapeHTML(e.title)}</a><span class="counter"> // ${e.path.slice(0, 4)}</span>`;
+          const line2 = `<span class="counter">   ${snippet(e.text, query)}</span>`;
+          return line1 + "\n" + line2;
+        })
+        .join("\n\n") + "\n";
+    });
+  }
+
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    const query = input.value.trim();
+
+    if (query.length < 2) {
+      status.textContent = "";
+      results.innerHTML = "";
+      clearWrap.style.display = "none";
+      return;
+    }
+
+    status.textContent = "searching…";
+    clearWrap.style.display = "";
+    timer = setTimeout(() => search(query), 250);
+  });
+
+  clearLink.addEventListener("click", e => {
+    e.preventDefault();
+    input.value = "";
+    status.textContent = "";
+    results.innerHTML = "";
+    clearWrap.style.display = "none";
+    input.focus();
+  });
+})();
+</script>
+
   </body>
 </html>
