@@ -15,6 +15,7 @@
       --mark-light: rgba(255, 241, 118, 0.9);
       --mark-dark: rgba(255, 235, 59, 0.9);
       --quote-fg: #555;
+      --quote-bg: rgba(17, 17, 17, 0.06);
     }
 
     @media (prefers-color-scheme: dark) {
@@ -22,7 +23,8 @@
         --bg: #000000;
         --fg: #ffffff;
         --link: #8fc9ed;
-        --quote-fg: #bbb;
+        --quote-fg: #999;
+        --quote-bg: rgba(255, 255, 255, 0.16);
       }
     }
 
@@ -52,8 +54,7 @@
 
     a:hover { text-decoration: underline; }
 
-    pre {
-      margin: 0;
+    #content {
       white-space: pre-wrap;
       word-wrap: break-word;
     }
@@ -79,8 +80,11 @@
       }
     }
 
-    .quote {
+    .quote-box {
       color: var(--quote-fg);
+      background: var(--quote-bg);
+      border-radius: 3px;
+      padding: 10px 14px;
     }
 
     .counter {
@@ -97,7 +101,7 @@
 
 <body>
 
-<pre id="content">Loading…</pre>
+<div id="content">Loading…</div>
 
 <script>
 (function () {
@@ -119,18 +123,10 @@
       const lines = text.split("\n"); // DO NOT trim
       const out = [];
       let markOpen = false; // tracks !! highlight state across lines
+      let quoteBuf = null; // buffers consecutive blockquote lines into one box
 
-      for (let line of lines) {
-
-        // blockquote: \ text
-        if (line.startsWith("\\ ")) {
-          out.push(
-            `<span class="quote">|- ${escapeHTML(line.slice(2))}</span>`
-          );
-          continue;
-        }
-
-        // highlights (may span multiple lines)
+      // highlight + link + day-counter processing, shared by normal and blockquote lines
+      function processLine(line) {
         const segments = line.split("!!");
         let processed = "";
         for (let i = 0; i < segments.length; i++) {
@@ -141,25 +137,43 @@
           }
         }
 
-        // links
         processed = processed.replace(
           /\[([^\]]+)\]\(([^)]+)\)/g,
-          (m, text, link) => {
-            if (/^https?:\/\//.test(link)) {
-              return `<a href="${link}">${text}</a>`;
-            }
-            return `<a href="${link}">${text}</a>`;
-          }
+          (m, text, link) => `<a href="${link}">${text}</a>`
         );
 
-        // day counter [N/365]
         processed = processed.replace(
           /\[(\d+\/\d+)\]/g,
           '<span class="counter">[$1]</span>'
         );
 
-        out.push(processed);
+        return processed;
       }
+
+      function flushQuote() {
+        if (quoteBuf) {
+          out.push(
+            `<div class="quote-box">` +
+            quoteBuf.map(l => `<div>${l}</div>`).join("") +
+            `</div>`
+          );
+          quoteBuf = null;
+        }
+      }
+
+      for (let line of lines) {
+
+        // blockquote: \ text (consecutive lines grouped into one box)
+        if (line.startsWith("\\ ")) {
+          if (!quoteBuf) quoteBuf = [];
+          quoteBuf.push(processLine(line.slice(2)));
+          continue;
+        }
+        flushQuote();
+
+        out.push(processLine(line));
+      }
+      flushQuote();
 
       content.innerHTML = out.join("\n"); // PRESERVE EMPTY LINES
     })
