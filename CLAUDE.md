@@ -46,13 +46,18 @@ Content here.
 - Do not add emphasis or highlights not present in the original intent.
 
 ## Entry link formats (for HTML indexing)
-- In `index.html`: `↳ YYYY-MM-DD <a href="post.html?p=YYYY/YYYYMMDD.txt">Title</a>`
-- In archive files: `↳ YYYY-MM-DD <a href="../post.html?p=YYYY/YYYYMMDD.txt">Title</a>`
+- In `index.html`: `↳ YYYY-MM-DD <a href="post.html?p=YYYY/YYYYMMDD.txt">Title</a> <span class="counter">[N/365]</span>`
+- In archive files: `↳ YYYY-MM-DD <a href="../post.html?p=YYYY/YYYYMMDD.txt">Title</a> <span class="counter">[N/365]</span>`
+- The `<span class="counter">` suffix is required on every entry (index, full-archive, month-archive, topics) — don't insert entries without it.
 
 ## Insertion rule (all HTML files)
 Insert before the first line starting with `↳ 20` in the relevant section.
 If no such line exists yet (empty section), insert after the invisible anchor `<span id="MM"></span>`, with one blank line above the new entry.
 In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
+
+## Helper scripts
+- `update_daily_note.py YYYYMMDD` — reads `YYYY/YYYYMMDD.txt` (must already exist with its title line) and inserts the corresponding entry into `index.html`, `YYYY/YYYY_full-archive.html`, and `YYYY/YYYYmm_archive.html` in one call. It does **not** add the `<span class="counter">` suffix and does **not** touch `topics/*.html` — both still need to be done by hand (see Step 3 below).
+- `add_counters.py` — a one-off backfill for old files that predate the counter convention; it scans the *entire* site (all years, all HTML including topics) for entries/files missing a counter and adds one. It is safe to re-run (idempotent) but **do not run it as part of the normal weekly publishing flow** — the counter is added manually/inline while writing each note and entry, not by running this script. Only run it deliberately, and review the diff before committing, since it can touch hundreds of files at once.
 
 ---
 
@@ -89,11 +94,9 @@ Content.
 ```
 
 ### Step 3 — Update HTML indexes
-Update all at once:
-  a. `YYYY/YYYY_full-archive.html` — insert all entries (blank line between months)
-  b. `YYYY/YYYYmm_archive.html` — insert all entries
-  c. `topics/*.html` — insert into every relevant theme page (NEVER skip)
-  d. `index.html` — insert all entries (update immediately unless user says otherwise)
+For each date, run `python3 update_daily_note.py YYYYMMDD` (oldest date first, so newest ends up on top) — it inserts the entry into `index.html`, `YYYY/YYYY_full-archive.html`, and `YYYY/YYYYmm_archive.html` in one call. Then, still per date:
+  a. Add the `<span class="counter">[N/365]</span>` suffix by hand to the entry just inserted in all three files (the script doesn't add it)
+  b. `topics/*.html` — insert into every relevant theme page, with the counter span included (NEVER skip)
 
 **New month detection (for index.html)**
 If adding the first entry of a new month:
