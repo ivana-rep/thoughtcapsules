@@ -41,13 +41,27 @@ for year in [2026, 2027]:
             continue
         day = day_of_year(fname[:8])
         counter = f"{day}/{total}"
-        # Skip if counter already present at end
-        if content.rstrip('\n').endswith(counter):
+        counter_line = f"[{counter}]"
+        # Skip if counter already present anywhere as its own line
+        if re.search(rf'(?m)^\[{re.escape(counter)}\]\s*$', content):
             continue
-        # Append blank line + counter
-        content = content.rstrip('\n') + f"\n\n[{counter}]\n"
+        lines = content.rstrip('\n').split('\n')
+        # Standard template has a "< [prev](...) | [next](...) >" nav line at
+        # the end; the counter belongs right before it, not after it.
+        nav_idx = next(
+            (i for i, line in enumerate(lines)
+             if line.strip().startswith('<') and 'prev' in line and 'next' in line),
+            None,
+        )
+        if nav_idx is not None:
+            before, after = lines[:nav_idx], lines[nav_idx:]
+            while before and before[-1].strip() == '':
+                before.pop()
+            new_content = '\n'.join(before + ['', counter_line, ''] + after) + '\n'
+        else:
+            new_content = '\n'.join(lines) + f"\n\n{counter_line}\n"
         with open(filepath, 'w') as f:
-            f.write(content)
+            f.write(new_content)
         print(f"  txt: {fname}  →  {counter}")
 
 
@@ -56,7 +70,8 @@ for year in [2026, 2027]:
 # Add:   [N/365] after </a>, only if not already present
 
 ENTRY_RE = re.compile(
-    r'(↳ \d{4}-\d{2}-\d{2} <a href="[^"]*(\d{8})\.txt[^"]*">[^<]*</a>)(?!\s*\[)'
+    r'(↳ \d{4}-\d{2}-\d{2} <a href="[^"]*(\d{8})\.txt[^"]*">[^<]*</a>)'
+    r'(?!\s*(?:<span class="counter">)?\[)'
 )
 
 
@@ -66,7 +81,7 @@ def replace_entry(m):
     year = int(datestr[:4])
     day = day_of_year(datestr)
     total = total_days(year)
-    return f"{full} [{day}/{total}]"
+    return f'{full} <span class="counter">[{day}/{total}]</span>'
 
 
 html_files = [
