@@ -1,0 +1,15 @@
+2026_08_24 | Three ways it fails
+↳ [back to full archive](2026/2026_full-archive.html)
+↳ [back to index](index.html)
+
+Before choosing, name three ways it goes wrong. Not to talk yourself out of it. To find out if you've actually looked.
+
+If you can't come up with three failure modes, you haven't examined the decision. You've just agreed with your own preference and called it thinking.
+
+[The five percent](post.html?p=2026/20260509.txt) argued for spending your attention only on the decisions that matter. This is what spending it looks like: not more time deliberating in general, but a specific move, reversing the plan and asking what breaks it before you commit to it.
+
+!!Optimism by default isn't confidence. It's a decision you never actually made.!!
+
+[236/365]
+
+< [prev](post.html?p=2026/20260823.txt) | [next](post.html?p=2026/20260825.txt) >
