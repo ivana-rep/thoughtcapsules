@@ -44,6 +44,7 @@ Content here.
 - No em-dashes mid-sentence. Slightly formal but not academic.
 - Contrast and paradox are common structural devices.
 - Do not add emphasis or highlights not present in the original intent.
+- Final reader has no access to the source, so don't be too vague. Add context if necessary, link external trusted sources to provide additional possibility to go deeper.
 
 ## Entry link formats (for HTML indexing)
 - In `index.html`: `↳ YYYY-MM-DD <a href="post.html?p=YYYY/YYYYMMDD.txt">Title</a> <span class="counter">[N/365]</span>`
@@ -64,7 +65,7 @@ In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
 ## PROCESS 1 — Register note(s)
 
 ### Start of session
-User specifies the date range. Read all candidate entries from `==writing-notes.md` in Obsidian.
+User specifies the date range. Read all candidate entries from `/Users/amministrazioneviandante/Library/Mobile Documents/iCloud~md~obsidian/Documents/Ivana_Notes/capture/==writing-notes.md`.
 
 ### Step 1 — Present all drafts at once
 For all notes in the range, present complete `.txt` files in final publication format in a single message:

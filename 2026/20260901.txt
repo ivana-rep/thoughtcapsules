@@ -1,0 +1,13 @@
+2026_09_01 | Discovered, not designed
+↳ [back to full archive](2026/2026_full-archive.html)
+↳ [back to index](index.html)
+
+Naval Ravikant, drawing on David Deutsch's epistemology, argues that [complex systems emerge from iteration on simple designs](https://nav.al/iterate), not from planning them whole. Each pass strips out what wasn't needed before anyone tries to optimize what's left. The tinkerer working at the edge of what's known is better positioned than the person perfecting an already-mapped path, because progress moves by bold conjecture, not by patient accumulation of a plan.
+
+The same mechanism scales down. [Failure, reflection, repetition](post.html?p=2026/20260420.txt) is how one skill compounds. Iteration on a simple design is how an entire field does.
+
+!!What looks unplanned at the edge of knowledge is usually the only method that has ever worked there.!!
+
+[244/365]
+
+< [prev](post.html?p=2026/20260831.txt) | [next](post.html?p=2026/20260902.txt) >

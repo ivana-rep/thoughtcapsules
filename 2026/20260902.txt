@@ -1,0 +1,13 @@
+2026_09_02 | The cheaper option
+↳ [back to full archive](2026/2026_full-archive.html)
+↳ [back to index](index.html)
+
+A state has two ways to answer growing inequality between capital and labor: redistribute, or repress. Economists Daron Acemoglu, Arda Gitmez, and Mehdi Shadmehr [model the choice formally](https://www.nber.org/papers/w35336) and find it isn't ideological. As automation raises capital's share of income and the threat of revolt grows with it, repression becomes systematically the cheaper option, not the crueler one.
+
+Democracies hold only as long as redistribution stays less expensive than control, and that threshold moves with how concentrated the technology gets. Like [an electorate that stops following complex arguments](post.html?p=2026/20260312.txt), nobody has to choose the outcome on purpose.
+
+!!It only has to be cheaper than the alternative, and stay that way long enough.!!
+
+[245/365]
+
+< [prev](post.html?p=2026/20260901.txt) | [next](post.html?p=2026/20260903.txt) >
