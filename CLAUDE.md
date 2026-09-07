@@ -47,12 +47,13 @@ Content here.
 - Final reader has no access to the source, so don't be too vague. Add context if necessary, link external trusted sources to provide additional possibility to go deeper.
 
 ## Entry link formats (for HTML indexing)
-- In `index.html`: `↳ YYYY-MM-DD <a href="post.html?p=YYYY/YYYYMMDD.txt">Title</a> <span class="counter">[N/365]</span>`
-- In archive files: `↳ YYYY-MM-DD <a href="../post.html?p=YYYY/YYYYMMDD.txt">Title</a> <span class="counter">[N/365]</span>`
+- In `index.html`: `↳ <a href="post.html?p=YYYY/YYYYMMDD.txt">YYYY-MM-DD</a> Title <span class="counter">[N/365]</span>`
+- In archive files: `↳ <a href="../post.html?p=YYYY/YYYYMMDD.txt">YYYY-MM-DD</a> Title <span class="counter">[N/365]</span>`
+- The link wraps the date, not the title.
 - The `<span class="counter">` suffix is required on every entry (index, full-archive, month-archive, topics) — don't insert entries without it.
 
 ## Insertion rule (all HTML files)
-Insert before the first line starting with `↳ 20` in the relevant section.
+Insert before the first line starting with `↳ <a href="` that points to a `post.html?p=` entry (i.e. the first daily-entry line, not a "back to..." nav line), in the relevant section.
 If no such line exists yet (empty section), insert after the invisible anchor `<span id="MM"></span>`, with one blank line above the new entry.
 In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
 

@@ -66,11 +66,11 @@ for year in [2026, 2027]:
 
 
 # --- 2. Update HTML files ---
-# Match: ↳ YYYY-MM-DD <a href="...YYYYMMDD.txt...">Title</a>
-# Add:   [N/365] after </a>, only if not already present
+# Match: ↳ <a href="...YYYYMMDD.txt...">YYYY-MM-DD</a> Title
+# Add:   [N/365] after the title, only if not already present
 
 ENTRY_RE = re.compile(
-    r'(↳ \d{4}-\d{2}-\d{2} <a href="[^"]*(\d{8})\.txt[^"]*">[^<]*</a>)'
+    r'(↳ <a href="[^"]*(\d{8})\.txt[^"]*">\d{4}-\d{2}-\d{2}</a> [^\n<]*)'
     r'(?!\s*(?:<span class="counter">)?\[)'
 )
 

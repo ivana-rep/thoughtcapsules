@@ -33,8 +33,8 @@ def make_entry(y: str, m: str, d: str, title: str, prefix: str):
       - "../" for files inside /YEAR      -> href="../post.html?p=2026/20260131.txt"
     """
     return (
-        f"↳ {y}-{m}-{d} "
-        f'<a href="{prefix}post.html?p={YEAR}/{y}{m}{d}.txt">{title}</a>'
+        f'↳ <a href="{prefix}post.html?p={YEAR}/{y}{m}{d}.txt">{y}-{m}-{d}</a> '
+        f"{title}"
     )
 
 def insert_entry(path: Path, entry: str):
@@ -45,7 +45,7 @@ def insert_entry(path: Path, entry: str):
 
     # 1) Normal case: insert before the first date line (keeps newest-first order)
     for i, line in enumerate(lines):
-        if line.startswith("↳ 20"):
+        if line.startswith("↳ <a href=\"") and "post.html?p=" in line:
             # Ensure a blank line before the list if needed
             if i > 0 and lines[i - 1].strip() != "":
                 lines.insert(i, "")
