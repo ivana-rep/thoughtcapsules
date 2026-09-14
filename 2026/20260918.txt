@@ -1,0 +1,15 @@
+2026_09_18 | The break point
+↳ [back to full archive](2026/2026_full-archive.html)
+↳ [back to index](index.html)
+
+Carl von Clausewitz, the Prussian officer who wrote *On War* after watching Napoleon rewrite the rules of it, coined "friction": the accumulation of small resistances, tired men, bad weather, wrong information, that turns an obvious move into an exhausting one. His line for it: everything in war is simple, and the simplest thing is difficult. The complexity people imagine into strategy is mostly an excuse — the moves are usually obvious, executing them under friction is what's hard.
+
+His other line follows from the first: the enemy of a good plan is the dream of a perfect one. [A plan doesn't have to be perfect, it just has to exist](post.html?p=2026/20260107.txt) — waiting for the flawless version is how the good-enough version never ships.
+
+Hemingway put the same friction inside a person instead of an army. In *A Farewell to Arms*: the world breaks everyone, and afterward many are strong at the broken places. Not despite the break. At it.
+
+!!The break isn't what stops you. Waiting for a plan that can't break is.!!
+
+[261/365]
+
+< [prev](post.html?p=2026/20260917.txt) | [next](post.html?p=2026/20260919.txt) >
