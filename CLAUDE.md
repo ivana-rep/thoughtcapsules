@@ -78,6 +78,8 @@ For all notes in the range, present complete `.txt` files in final publication f
 
 Internal links: scan existing `.txt` files, embed the best genuine connections directly in the draft. Do not force links. Present all drafts together — no per-note approval steps.
 
+Before drafting, run the values check described in `CLAUDE.local.md` (private, not in the repo).
+
 Wait for approval or corrections before writing.
 
 ### Step 2 — Write files
