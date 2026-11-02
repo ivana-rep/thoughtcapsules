@@ -2,15 +2,27 @@
 
 ## Project structure
 ```
-index.html                      ← homepage: full year index with month anchors (newest-first)
-post.html                       ← single-post viewer (loads .txt via ?p= param)
-yearly-archives.html            ← links to each year's archives
-about.txt
+index.html                      ← homepage: sidebar + tiles, then the current year's list (data block)
+post.html                       ← single-note viewer (loads .txt via ?p= param)
+archive.html                    ← the one archive page: year / month / topic filters (no data of its own)
+tc.css, tc.js                   ← shared style and renderer for every page
+assets/                         ← pixel tiles and avatar (tree)
+yearly-archives.html            ← data only: one link per year (the search reads it); redirects to archive.html
+topics.html                     ← data only: list of topic pages; redirects to archive.html#topics
+topics/*.html                   ← data only: entries per topic; redirect to archive.html#<topic>
+about.txt                       ← kept but no longer linked; post.html?p=about.txt redirects to index.html
 YYYY/
-  YYYY_full-archive.html        ← all entries for the year, newest-first
-  YYYYmm_archive.html × 12     ← per-month entries, newest-first
+  YYYY_full-archive.html        ← data only: all entries for the year; redirects to archive.html#YYYY
+  YYYYmm_archive.html × 12     ← data only: per-month entries; redirect to archive.html#YYYY-MM
   YYYYMMDD.txt × 365            ← daily notes
 ```
+
+## Page layout (since the November 2026 redesign)
+- Every HTML file keeps its entry lines, in the same format as before, inside a hidden `<pre id="data" hidden>` … `</pre>` block. `tc.js` reads that block and builds the page. Nothing outside the block may contain a line starting with `↳ <a href="…post.html?p=`, so `update_daily_note.py` and the insertion rule below keep working unchanged.
+- The archive, topic, month and year files are data files: opened in a browser they redirect to the matching view of `archive.html`, but they are still where entries get written.
+- `index.html`'s data block still holds the month bar with `<mark>` on the current month and the `<span id="MM"></span>` anchors: the renderer reads the current month from the `<mark>`.
+- Pages link `tc.css?v=N` / `tc.js?v=N` and the images use `?v=N`: raise N (in every page, and in `tc.css` for the images) when those files change, so browsers don't keep old copies.
+- Design decisions: palette "ink and sage", the tiles and the tree avatar were made for this site; same fonts and structure as soul.
 
 ## Daily note file format
 ```
@@ -60,6 +72,7 @@ In `YYYY_full-archive.html` and `index.html`, add a blank line between months.
 ## Helper scripts
 - `update_daily_note.py YYYYMMDD` — reads `YYYY/YYYYMMDD.txt` (must already exist with its title line) and inserts the corresponding entry into `index.html`, `YYYY/YYYY_full-archive.html`, and `YYYY/YYYYmm_archive.html` in one call. It does **not** add the `<span class="counter">` suffix and does **not** touch `topics/*.html` — both still need to be done by hand (see Step 3 below).
 - `add_counters.py` — a one-off backfill for old files that predate the counter convention; it scans the *entire* site (all years, all HTML including topics) for entries/files missing a counter and adds one. It is safe to re-run (idempotent) but **do not run it as part of the normal weekly publishing flow** — the counter is added manually/inline while writing each note and entry, not by running this script. Only run it deliberately, and review the diff before committing, since it can touch hundreds of files at once.
+- `convert_pages.py` — moves a page's `<pre>` lines into the hidden data block and gives it the new layout (or the redirect, for archive/topic pages). Pages already converted are skipped. Run it after `generate_yearly_monthly_archives.py` creates a new year, since that script still writes pages in the old format. A new topic page must also be converted (or copied from an existing one) and listed in `topics.html`.
 
 ---
 

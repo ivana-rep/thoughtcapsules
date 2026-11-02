@@ -1,131 +1,22 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>thinking capsules</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark">
-    <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon_dark.png" media="(prefers-color-scheme: dark)">
-    <link rel="apple-touch-icon" sizes="180x180" href="/thoughtcapsules/apple-touch-icon.png">
-
-    <style>
-      :root {
-        --bg: #ffffff;
-        --fg: #111111;
-        --link: #005bff;
-
-        --mark-light: rgba(255, 241, 118, 0.9);
-        --mark-dark: rgba(255, 235, 59, 0.9);
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #000000;
-          --fg: #ffffff;
-          --link: #8fc9ed;
-        }
-      }
-
-      html, body { height: 100%; }
-      html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        line-height: 1.35;
-        -webkit-font-smoothing: antialiased;
-        padding: 16px;
-      }
-
-      @media (hover: hover) and (pointer: fine) {
-        body {
-          font-size: 12.6px;
-        }
-      }
-
-      a, a:visited {
-        color: var(--link);
-        text-decoration: none;
-      }
-
-      a:hover { text-decoration: underline; }
-
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-
-      /* LIGHT MODE — marker behind text */
-      mark {
-        background: none;
-        color: inherit;
-        padding: 0 2px;
-        background-image: linear-gradient(
-          transparent 62%,
-          var(--mark-light) 62%
-        );
-      }
-
-      /* DARK MODE — underline (no yellow block) */
-      @media (prefers-color-scheme: dark) {
-        mark {
-          background: none;
-          padding: 0;
-          text-decoration: underline;
-          text-decoration-thickness: 2px;
-          text-underline-offset: 0.15em;
-          text-decoration-color: var(--mark-dark);
-        }
-      }
-
-    .counter {
-      color: #767676;
-      font-size: 0.8em;
-    }
-
-    .top-link, .top-link:visited, .top-link:hover, .top-link:active {
-      color: #767676;
-      font-size: 0.8em;
-      text-decoration: underline;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .counter {
-        color: #999;
-      }
-      .top-link, .top-link:visited, .top-link:hover, .top-link:active {
-        color: #999;
-      }
-    }
-
-    #search-input {
-      font: inherit;
-      font-size: inherit;
-      color: var(--fg);
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--link);
-      outline: none;
-      width: 200px;
-    }
-
-    #search-input::placeholder {
-      color: #767676;
-    }
-    </style>
-  </head>
-
-  <body>
-<pre>
-↳ <mark>thinking capsules</mark> | <a href="post.html?p=about.txt">about</a> | <a href="yearly-archives.html">yearly archives</a> | <a href="topics.html">topics</a>
-
-↳ search: <input type="text" id="search-input" placeholder="keyword" autocomplete="off" spellcheck="false"> <span class="counter" id="search-status"></span> <span class="counter" id="search-clear" style="display:none">// <a href="#" id="search-clear-link">clear results</a></span>
-<span id="search-results"></span>
-
+<head>
+  <meta charset="utf-8">
+  <title>thinking capsules</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon.png?v=2" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon_dark.png?v=2" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/thoughtcapsules/apple-touch-icon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tc.css?v=2">
+  <script src="tc.js?v=2"></script>
+</head>
+<body>
+<main class="card home" id="card"></main>
+<pre id="data" hidden>
 <a href="2026/2026_full-archive.html">/2026</a>
 <a href="#01">01</a> | <a href="#02">02</a> | <a href="#03">03</a> | <a href="#04">04</a> | <a href="#05">05</a> | <a href="#06">06</a> | <a href="#07">07</a> | <a href="#08">08</a> | <a href="#09">09</a> | <a href="#10">10</a> | <a href="#11"><mark>11</mark></a> | <a href="#12">12</a>
 <span id="11"></span>
@@ -461,145 +352,6 @@
 <span id="12"></span>
 
 </pre>
-
-<script>
-(function () {
-  const input = document.getElementById("search-input");
-  const status = document.getElementById("search-status");
-  const results = document.getElementById("search-results");
-  const clearWrap = document.getElementById("search-clear");
-  const clearLink = document.getElementById("search-clear-link");
-
-  let indexPromise = null;
-  let timer = null;
-
-  function escapeHTML(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
-  function escapeRegExp(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-
-  // discovers years from yearly-archives.html (no hardcoded year list —
-  // a new year is picked up automatically as soon as it's linked there)
-  function discoverYears() {
-    return fetch("yearly-archives.html")
-      .then(r => r.text())
-      .then(html => {
-        const years = new Set();
-        const yearRe = /<a href="(\d{4})\/\1_full-archive\.html">/g;
-        let m;
-        while ((m = yearRe.exec(html))) years.add(m[1]);
-        return [...years];
-      })
-      .catch(() => []);
-  }
-
-  function buildIndex() {
-    if (indexPromise) return indexPromise;
-
-    indexPromise = discoverYears()
-      .then(years =>
-        Promise.all(
-          years.map(year =>
-            fetch(`${year}/${year}_full-archive.html`)
-              .then(r => r.text())
-              .catch(() => "")
-          )
-        )
-      )
-      .then(pages => {
-        const found = new Map();
-        const linkRe = /<a href="(?:\.\.\/)?post\.html\?p=(\d{4}\/\d{8}\.txt)">([^<]*)<\/a>/g;
-
-        for (const html of pages) {
-          let m;
-          while ((m = linkRe.exec(html))) {
-            if (!found.has(m[1])) found.set(m[1], m[2]);
-          }
-        }
-
-        return Promise.all(
-          [...found.entries()].map(([path, title]) =>
-            fetch(path)
-              .then(r => r.text())
-              .then(text => ({ path, title, text }))
-              .catch(() => null)
-          )
-        ).then(entries => entries.filter(Boolean));
-      });
-
-    return indexPromise;
-  }
-
-  function snippet(text, query) {
-    const at = text.toLowerCase().indexOf(query.toLowerCase());
-    if (at === -1) return "";
-
-    const start = Math.max(0, at - 40);
-    const end = Math.min(text.length, at + query.length + 40);
-    const excerpt = escapeHTML(text.slice(start, end).replace(/\s+/g, " ").trim());
-    const highlighted = excerpt.replace(
-      new RegExp(escapeRegExp(escapeHTML(query)), "ig"),
-      m => `<mark>${m}</mark>`
-    );
-
-    return (start > 0 ? "…" : "") + highlighted + (end < text.length ? "…" : "");
-  }
-
-  function search(query) {
-    buildIndex().then(entries => {
-      const q = query.toLowerCase();
-      const matches = entries.filter(e => e.text.toLowerCase().includes(q));
-
-      if (matches.length === 0) {
-        status.textContent = "no results";
-        results.innerHTML = "";
-        return;
-      }
-
-      status.textContent = matches.length + " result" + (matches.length === 1 ? "" : "s");
-
-      results.innerHTML = matches
-        .map(e => {
-          const line1 = `↳ <a href="post.html?p=${e.path}">${escapeHTML(e.title)}</a><span class="counter"> // ${e.path.slice(0, 4)}</span>`;
-          const line2 = `<span class="counter">   ${snippet(e.text, query)}</span>`;
-          return line1 + "\n" + line2;
-        })
-        .join("\n\n") + "\n";
-    });
-  }
-
-  input.addEventListener("input", () => {
-    clearTimeout(timer);
-    const query = input.value.trim();
-
-    if (query.length < 2) {
-      status.textContent = "";
-      results.innerHTML = "";
-      clearWrap.style.display = "none";
-      return;
-    }
-
-    status.textContent = "searching…";
-    clearWrap.style.display = "";
-    timer = setTimeout(() => search(query), 250);
-  });
-
-  clearLink.addEventListener("click", e => {
-    e.preventDefault();
-    input.value = "";
-    status.textContent = "";
-    results.innerHTML = "";
-    clearWrap.style.display = "none";
-    input.focus();
-  });
-})();
-</script>
-
-  </body>
+<script>TC.home();</script>
+</body>
 </html>
