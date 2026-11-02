@@ -86,6 +86,7 @@ a:hover { text-decoration: underline; }
 .months .m.on { background: var(--chip-bg); color: var(--chip-text); border-color: var(--chip-bg); }
 .months .m.cur:not(.on) { border-color: var(--accent); }
 .months .m.off { color: var(--muted); opacity: .45; cursor: default; }
+.months .m.all { margin-left: 6px; border-style: dashed; }
 .sec { margin-top: 24px; scroll-margin-top: 12px; }
 .sec h2 { font-size: 24px; margin: 0 0 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .sec h2 .count { font-family: var(--mono); }

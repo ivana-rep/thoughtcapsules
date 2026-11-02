@@ -71,9 +71,11 @@
     const chips = `<div class="months">${MONTHS.map((n, i) => {
       const mm = pad(i + 1), cls = 'm' + (g[mm] ? '' : ' off') + (mm === current ? ' cur' : '');
       return g[mm] ? `<a class="${cls}" href="#${mm}" data-m="${mm}">${n.slice(0, 3)}</a>` : `<span class="${cls}">${n.slice(0, 3)}</span>`;
-    }).join('')}</div>`;
+    }).join('')}`;
+    // open = 'all' unfolds every month; the last chip toggles between the two states
     function draw(open, scroll) {
-      host.innerHTML = chips + order.map(mm => `<details class="mon" id="${mm}"${mm === open ? ' open' : ''}><summary>${MONTHS[+mm - 1]} <span class="count">${g[mm].length}</span>${chip(`${ROOT}archive.html#${year}-${mm}`, 'archive', true)}</summary><div class="inner">${g[mm].map(r => rowHTML(r)).join('')}</div></details>`).join('');
+      const all = open === 'all';
+      host.innerHTML = chips + `<button class="m all" type="button" data-all>${all ? 'close all' : 'open all'}</button></div>` + order.map(mm => `<details class="mon" id="${mm}"${all || mm === open ? ' open' : ''}><summary>${MONTHS[+mm - 1]} <span class="count">${g[mm].length}</span>${chip(`${ROOT}archive.html#${year}-${mm}`, 'archive', true)}</summary><div class="inner">${g[mm].map(r => rowHTML(r)).join('')}</div></details>`).join('');
       const t = scroll && document.getElementById(open);
       if (t) t.scrollIntoView();
     }
@@ -83,6 +85,8 @@
       if (g[h]) draw(h, scroll); else draw(current, false);
     }
     host.addEventListener('click', e => {
+      const b = e.target.closest('[data-all]');
+      if (b) { draw(b.textContent === 'open all' ? 'all' : current, false); return; }
       const a = e.target.closest('[data-m]');
       if (a) { e.preventDefault(); history.replaceState(null, '', '#' + a.dataset.m); draw(a.dataset.m, true); }
     });
