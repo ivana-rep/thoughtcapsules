@@ -93,7 +93,7 @@ Internal links: scan existing `.txt` files, embed the best genuine connections d
 
 Before drafting, run the values check described in `CLAUDE.local.md` (private, not in the repo).
 
-Show the drafts as one simple HTML page in the scratchpad, opened with `open file.html`, not in the terminal: every `[text](url)` becomes `<a target="_blank">`, and site-relative links (e.g. `YYYY/YYYYMMDD.txt`, `post.html?p=...`) become absolute URLs on `https://ivana-rep.github.io/thoughtcapsules/`.
+Show the drafts as one simple HTML page in the scratchpad, opened with `open file.html`, not in the terminal: every `[text](url)` becomes `<a target="_blank">`, and site-relative links (e.g. `YYYY/YYYYMMDD.txt`, `post.html?p=...`) become absolute URLs on `https://thinkingcapsules.github.io/`.
 
 Wait for approval or corrections before writing.
 
