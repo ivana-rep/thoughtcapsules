@@ -14,9 +14,9 @@ HEAD = '''<!doctype html>
   <title>{title}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon.png?v=2" media="(prefers-color-scheme: light)">
-  <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon_dark.png?v=2" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" sizes="180x180" href="/thoughtcapsules/apple-touch-icon.png?v=2">
+  <link rel="icon" type="image/png" href="/tcfavicon.png?v=3" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" href="/tcfavicon_dark.png?v=3" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">

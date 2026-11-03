@@ -14,9 +14,9 @@ HTML_HEAD = """<!doctype html>
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" href="/thoughtcapsules/tcfavicon_dark.png" media="(prefers-color-scheme: dark)">
-    <link rel="apple-touch-icon" sizes="180x180" href="/thoughtcapsules/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/tcfavicon.png?v=3" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="/tcfavicon_dark.png?v=3" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
 
     <style>
       :root {{
