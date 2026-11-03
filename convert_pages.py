@@ -21,7 +21,7 @@ HEAD = '''<!doctype html>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{pfx}tc.css?v=3">
-  <script src="{pfx}tc.js?v=3"></script>
+  <script src="{pfx}tc.js?v=4"></script>
 </head>
 <body>
 <main class="card{cls}" id="card"></main>

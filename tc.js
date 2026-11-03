@@ -422,7 +422,7 @@ self.onmessage = async (e) => {
 <input type="text" id="s-input" placeholder="an idea, a question" autocomplete="off" spellcheck="false">${res('s')}
 </div>
 <a class="tile tile-who p-moon" href="https://ivana-dicarlo.pages.dev/" target="_blank" rel="noopener"><span class="badge" aria-hidden="true">↗</span><span class="tag">who writes here: Ivana</span></a>
-<div class="other">other projects: <a href="https://thesouldevotional.github.io/soul/" target="_blank" rel="noopener">soul</a></div>
+<div class="other">other projects: <a href="https://thesouldevotional.github.io/soul/" target="_blank" rel="noopener">soul</a> · <a href="https://anthology-lab.github.io/" target="_blank" rel="noopener">anthology-lab</a></div>
 </div>`;
     const tiles = `<div class="grid">` +
       (last ? `<a class="tile tile-hero p-ripple" href="${last.href}"><span class="badge" aria-hidden="true">↗</span><span class="sub">${last.date === today ? 'today' : 'latest'} · ${last.date} · ${last.n}/365</span><span class="tag">${last.title}</span></a>` : '') +
